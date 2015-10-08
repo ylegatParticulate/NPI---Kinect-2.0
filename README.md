@@ -10,7 +10,8 @@ Yessika **place surname here**
 
 Claudia **place surname here**
 
-Check the [objectives](TODO.md)
+--
+**Check the** [objectives](TODO.md)
 
 ######Some useful links
 
