@@ -10,6 +10,12 @@ Yessika **place surname here**
 
 Claudia **place surname here**
 
+[Objectives](TODO.md)
+
+######Some useful links
+
 [Read the github tutorial](https://guides.github.com/activities/hello-world/).
+
 [Read here to learn how to write in github](https://help.github.com/articles/markdown-basics/).
+
 [Read here to learn to do fancy stuff](https://help.github.com/articles/github-flavored-markdown/).
