@@ -6,9 +6,9 @@ Hello, this site is under construction but soon it will be filled with awesome s
 
 Carlos Ibáñez Partera
 
-Yessika **place surname here**
+Yessika Legat
 
-Claudia **place surname here**
+Claudia Schwenger
 
 --
 **Check the** [objectives](TODO.md)
