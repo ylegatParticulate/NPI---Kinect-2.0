@@ -125,6 +125,7 @@ namespace KinectHandTracking
 
             foreach (Joint joint in body.Joints.Values)
             {
+                
                 canvas.DrawPoint(joint, mapper);
             }
 
@@ -164,7 +165,7 @@ namespace KinectHandTracking
             {
                 Width = 20,
                 Height = 20,
-                Fill = new SolidColorBrush(Colors.LightBlue)
+                Fill = new SolidColorBrush(Colors.Coral)
             };
 
             Canvas.SetLeft(ellipse, point.X - ellipse.Width / 2);
@@ -183,7 +184,7 @@ namespace KinectHandTracking
             {
                 Width = 100,
                 Height = 100,
-                Stroke = new SolidColorBrush(Colors.LightBlue),
+                Stroke = new SolidColorBrush(Colors.Firebrick),
                 StrokeThickness = 4
             };
 
@@ -227,11 +228,31 @@ namespace KinectHandTracking
                 X2 = secondPoint.X,
                 Y2 = secondPoint.Y,
                 StrokeThickness = 8,
-                Stroke = new SolidColorBrush(Colors.LightBlue)
+                Stroke = new SolidColorBrush(Colors.Firebrick)
             };
 
             canvas.Children.Add(line);
         }
+
+        public static void DrawLine(this Canvas canvas, Joint first, Point second, CoordinateMapper mapper)
+        {
+            if (first.TrackingState == TrackingState.NotTracked) return;
+
+            Point firstPoint = first.Scale(mapper);
+
+            Line line = new Line
+            {
+                X1 = firstPoint.X,
+                Y1 = firstPoint.Y,
+                X2 = second.X,
+                Y2 = second.Y,
+                StrokeThickness = 8,
+                Stroke = new SolidColorBrush(Colors.Pink)
+            };
+
+            canvas.Children.Add(line);
+        }
+
 
         #endregion
     }

@@ -96,17 +96,79 @@ namespace KinectHandTracking
                         {
                             if (body.IsTracked)
                             {
+                                /*
+                                 *  TODO 
+                                 * 
+                                 *  1. Once in correct position, 7 secs and start game
+                                 *  2. Print a huge START!! and remove the silhoute
+                                 *  3. Check if head is trackable all the time
+                                 *  4. Fancy GUI
+                                 *  5. Tutorial
+                                 *  6. Problems and solutions
+                                 * 
+                                 *  lllll - put Super Mario Blocks randomly in the frame appearing
+                                 *  llllll - Score
+                                 *  lllllll - Time
+                                 */
+
+
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
+
+                                Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
+
+
+                                invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
+                                invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
 
 
                                 Joint head = body.Joints[JointType.Head];
-                                headInfo.Text = head.Position.X.ToString();
-                                marginHead.Text = InvisibleHead.Margin.Left.ToString();
+                                Point headPoint = head.Scale(_sensor.CoordinateMapper);
+
+                                //headInfo.Text = headPoint.X.ToString();
+                                //marginHead.Text = invisibleHeadPoint.X.ToString();
+
+                                double distance = Math.Sqrt(Math.Pow(headPoint.X > invisibleHeadPoint.X ? invisibleHeadPoint.X - headPoint.X : headPoint.X - invisibleHeadPoint.X, 2) + Math.Pow(headPoint.Y > invisibleHeadPoint.Y ? invisibleHeadPoint.Y - headPoint.Y : headPoint.Y - invisibleHeadPoint.Y, 2));
+
+                                //DistanceBox.Text = distance.ToString();
+
+                                //canvas.DrawLine(head, invisibleHeadPoint, _sensor.CoordinateMapper);
 
 
-                               
-                                // Find the joints
-                                // fucking joints for everything
+                                if (head.Position.Z > 1.1 && head.Position.Z < 1.31)
+                                {
+                                    if (distance < 61)
+                                    {
+                                        pink.Visibility = System.Windows.Visibility.Hidden;
+                                        green.Visibility = System.Windows.Visibility.Visible;
+
+                                        DepthBox.Text = "Stay!!!";
+
+                                    }
+                                    else
+                                    {
+                                        pink.Visibility = System.Windows.Visibility.Visible;
+                                        green.Visibility = System.Windows.Visibility.Hidden;
+
+                                        DepthBox.Text = "Depth is OK";
+                                    }
+                                }
+                                else
+                                {
+                                    if (head.Position.Z < 1.1)
+                                        DepthBox.Text = "Back!!!!";
+                                    else
+                                        DepthBox.Text = "Forwardddd!!!!";
+
+
+                                    pink.Visibility = System.Windows.Visibility.Visible;
+                                    green.Visibility = System.Windows.Visibility.Hidden;
+
+                                }
+
+
+                                //DepthBox.Text = head.Position.Z.ToString();
+
+
                                
                                 Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
                                 Joint ShoulderLeft = body.Joints[JointType.ShoulderLeft];
@@ -146,8 +208,8 @@ namespace KinectHandTracking
                                 canvas.DrawLine(ShoulderRight, ElbowRightJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(ElbowRightJoint, WristRightJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(ElbowLeftJoint, WristLeftJoint, _sensor.CoordinateMapper);
-                                canvas.DrawLine(ElbowLeftJoint, handLeft, _sensor.CoordinateMapper);
-                                canvas.DrawLine(ElbowRightJoint, handRight, _sensor.CoordinateMapper);
+                                canvas.DrawLine(WristLeftJoint, handLeft, _sensor.CoordinateMapper);
+                                canvas.DrawLine(WristRightJoint, handRight, _sensor.CoordinateMapper);
 
                                 if (head.Position.Y < handLeft.Position.Y)
                                 {
@@ -229,6 +291,11 @@ namespace KinectHandTracking
         }
 
         private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_TextChanged_2(object sender, TextChangedEventArgs e)
         {
 
         }
