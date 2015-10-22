@@ -10,7 +10,7 @@
 - [ ] Set some other goals.
 
 
-######TODO Basic stuff
+#####TODO Basic stuff
 
 1. Once in correct position, 7 secs and start game
 2. Print a huge START!! and remove the silhoute
@@ -18,7 +18,8 @@
 4. Fancy GUI
 5. Tutorial
 6. Problems and solutions
- 
+
+######For the future 
 - put Super Mario Blocks randomly in the frame appearing
 - Score
 - Time
