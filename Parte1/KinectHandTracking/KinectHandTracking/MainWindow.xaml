@@ -6,12 +6,15 @@
         <Viewbox>
             <Grid Width="1920" Height="1080">
                 <Image Name="camera" />
-                <Canvas Name="canvas" Margin="0,0,839,0" />
-                <Ellipse x:Name="InvisibleHead" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="216" Margin="921,409,0,0" Stroke="Black" VerticalAlignment="Top" Width="212" Visibility="Hidden"/>
-                <TextBox x:Name="Hola" HorizontalAlignment="Left" Height="130" Margin="1397,595,0,0" TextWrapping="Wrap" Text="hola" VerticalAlignment="Top" Width="399" TextChanged="TextBox_TextChanged" SpellCheck.IsEnabled="True" FontSize="72"/>
-                <TextBox x:Name="headInfo" HorizontalAlignment="Left" Height="92" Margin="1217,51,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="313" FontSize="48" TextChanged="headInfo_TextChanged"/>
-                <Image Source="mann-oberkorper-silhouette_318-35845.jpg" Stretch="Fill" OpacityMask="#FFE05656" Margin="-742,368,1997,0"/>
-                <TextBox x:Name="marginHead" HorizontalAlignment="Left" Height="91" Margin="1217,172,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="313" TextChanged="TextBox_TextChanged_1" FontSize="48"/>
+                <Canvas Name="canvas" Margin="10,10,829,-10" />
+                <Ellipse x:Name="InvisibleHead" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="216" Margin="919,311,0,0" Stroke="Black" VerticalAlignment="Top" Width="212" Visibility="Hidden"/>
+                <TextBox x:Name="Hola" HorizontalAlignment="Left" Height="130" Margin="1477,580,0,0" TextWrapping="Wrap" Text="hola" VerticalAlignment="Top" Width="399" TextChanged="TextBox_TextChanged" SpellCheck.IsEnabled="True" FontSize="72"/>
+                <TextBox x:Name="headInfo" HorizontalAlignment="Left" Height="92" Margin="1563,34,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="313" FontSize="48" TextChanged="headInfo_TextChanged" Visibility="Hidden"/>
+                <TextBox x:Name="marginHead" HorizontalAlignment="Left" Height="91" Margin="1563,162,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="313" TextChanged="TextBox_TextChanged_1" FontSize="48" Visibility="Hidden"/>
+                <TextBox x:Name="DistanceBox" HorizontalAlignment="Left" Height="89" Margin="1563,292,0,0" TextWrapping="Wrap" Text="Distance" VerticalAlignment="Top" Width="313" FontSize="48" Visibility="Hidden"/>
+                <TextBox x:Name="DepthBox" HorizontalAlignment="Left" Height="74" Margin="1563,398,0,0" TextWrapping="Wrap" Text="Depth" VerticalAlignment="Top" Width="313" TextChanged="TextBox_TextChanged_2" FontSize="48"/>
+                <Image x:Name="pink" Source="pink.png" Stretch="Fill" Margin="710,292,584,162" Opacity="0.68"/>
+                <Image x:Name="green" Source="green.png" Stretch="Fill" Margin="710,292,584,162" Opacity="0.68" Visibility="Hidden"/>
             </Grid>
         </Viewbox>
         <Grid Style="{StaticResource ContainerStyle}" Margin="0,-30,-440,30">

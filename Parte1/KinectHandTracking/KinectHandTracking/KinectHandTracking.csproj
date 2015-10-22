@@ -37,7 +37,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Kinect, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Kinect, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>D:\PROGRAMME\Microsoft SDKs\Kinect\v2.0_1409\Assemblies\Microsoft.Kinect.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -98,6 +100,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="mann-oberkorper-silhouette_318-35845.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pink.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
