@@ -27,6 +27,13 @@ namespace KinectHandTracking
         MultiSourceFrameReader _reader;
         IList<Body> _bodies;
 
+        Stopwatch countdown;
+        Boolean countdownIsStored;
+
+        Boolean gameStarted;
+
+        UIElement[] blockArray;
+
         #endregion
 
         #region Constructor
@@ -34,6 +41,13 @@ namespace KinectHandTracking
         public MainWindow()
         {
             InitializeComponent();
+
+            countdownIsStored = false;
+            gameStarted = false;
+            letBoxesAppear();
+            
+           
+
         }
 
         #endregion
@@ -63,6 +77,117 @@ namespace KinectHandTracking
             if (_sensor != null)
             {
                 _sensor.Close();
+            }
+        }
+
+
+        void letBoxesAppear()
+        {
+           /* 
+            BitmapImage box = new BitmapImage(new Uri("D:/UNI/WiSe1516/NPI/KinectHandTracking/KinectHandTracking/box.jpg"));
+
+            UIElement hola = new UIElement();
+
+            hola.
+            
+
+            canvas.Children.Add()
+            */
+            Random rnd = new Random();
+            int nextmar1= 4;
+
+            if (nextmar1 == 1)
+            {
+                box1.Visibility = System.Windows.Visibility.Visible;
+            }
+            if (nextmar1 ==2)
+            {
+                box2.Visibility = System.Windows.Visibility.Visible;
+            }
+            if (nextmar1 == 3)
+            {
+                box3.Visibility = System.Windows.Visibility.Visible;
+            }
+            if (nextmar1 == 4)
+            {
+                box4.Visibility = System.Windows.Visibility.Visible;
+            }
+           //String bla=  Convert.ToString(nextmar1);
+        
+          // String nextBlock1 = "Block"+ nextmar1;
+       
+            
+            Countdown.Text = nextmar1.ToString();
+
+
+            if (box4.AreAnyTouchesCaptured)
+            {
+                Countdown.Text = "Tortuga";
+            }
+           
+           
+
+
+        }
+        void CheckInitialConditions(Point headPoint){
+            
+
+            Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
+
+
+            invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
+            invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
+
+            double distance = Math.Sqrt(Math.Pow(headPoint.X > invisibleHeadPoint.X ? invisibleHeadPoint.X - headPoint.X : headPoint.X - invisibleHeadPoint.X, 2) + Math.Pow(headPoint.Y > invisibleHeadPoint.Y ? invisibleHeadPoint.Y - headPoint.Y : headPoint.Y - invisibleHeadPoint.Y, 2));
+
+            if (distance < 61)
+            {
+                pink.Visibility = System.Windows.Visibility.Hidden;
+                green.Visibility = System.Windows.Visibility.Visible;
+
+                //Countdown.Text = "Stay!!!";
+
+                //countdown part :)
+
+                if (countdownIsStored){
+                                            
+
+                    int elapsed =  5 - countdown.Elapsed.Seconds;
+
+
+                    Countdown.Text = elapsed.ToString();
+
+                    if (elapsed < 1)
+                    {
+                        Countdown.Text = "STAAAART";
+
+                        //Countdown.Foreground =  Control.FontStyleProperty.PropertyType.;
+
+                        //Awesome stuff here
+
+                        green.Visibility = System.Windows.Visibility.Hidden;
+                        letBoxesAppear();
+
+                        gameStarted = true;
+
+                    }
+                                                
+                } 
+                else{
+                    countdown = new Stopwatch();
+                    countdown.Start();
+                    countdownIsStored = true;
+
+                }
+            }
+            else
+            {
+                countdownIsStored = false;
+
+                pink.Visibility = System.Windows.Visibility.Visible;
+                green.Visibility = System.Windows.Visibility.Hidden;
+
+                Countdown.Text = "Depth is OK";
             }
         }
 
@@ -114,20 +239,12 @@ namespace KinectHandTracking
 
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
 
-                                Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
-
-
-                                invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
-                                invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
-
-
                                 Joint head = body.Joints[JointType.Head];
                                 Point headPoint = head.Scale(_sensor.CoordinateMapper);
 
                                 //headInfo.Text = headPoint.X.ToString();
                                 //marginHead.Text = invisibleHeadPoint.X.ToString();
 
-                                double distance = Math.Sqrt(Math.Pow(headPoint.X > invisibleHeadPoint.X ? invisibleHeadPoint.X - headPoint.X : headPoint.X - invisibleHeadPoint.X, 2) + Math.Pow(headPoint.Y > invisibleHeadPoint.Y ? invisibleHeadPoint.Y - headPoint.Y : headPoint.Y - invisibleHeadPoint.Y, 2));
 
                                 //DistanceBox.Text = distance.ToString();
 
@@ -136,32 +253,30 @@ namespace KinectHandTracking
 
                                 if (head.Position.Z > 1.1 && head.Position.Z < 1.31)
                                 {
-                                    if (distance < 61)
-                                    {
-                                        pink.Visibility = System.Windows.Visibility.Hidden;
-                                        green.Visibility = System.Windows.Visibility.Visible;
+                                    if (!gameStarted) {
+                                        CheckInitialConditions(headPoint);
 
-                                        DepthBox.Text = "Stay!!!";
-
+                                        
                                     }
                                     else
                                     {
-                                        pink.Visibility = System.Windows.Visibility.Visible;
-                                        green.Visibility = System.Windows.Visibility.Hidden;
 
-                                        DepthBox.Text = "Depth is OK";
                                     }
                                 }
                                 else
                                 {
-                                    if (head.Position.Z < 1.1)
-                                        DepthBox.Text = "Back!!!!";
-                                    else
-                                        DepthBox.Text = "Forwardddd!!!!";
+                                    if (!gameStarted) { 
+                                        if (head.Position.Z < 1.1)
+                                            Countdown.Text = "Back!!!!";
+                                        else
+                                            Countdown.Text = "Forwardddd!!!!";
 
 
-                                    pink.Visibility = System.Windows.Visibility.Visible;
-                                    green.Visibility = System.Windows.Visibility.Hidden;
+                                        countdownIsStored = false;
+
+                                        pink.Visibility = System.Windows.Visibility.Visible;
+                                        green.Visibility = System.Windows.Visibility.Hidden;
+                                    }
 
                                 }
 
@@ -296,6 +411,21 @@ namespace KinectHandTracking
         }
 
         private void TextBox_TextChanged_2(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_TextChanged_3(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void First_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void Second_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
