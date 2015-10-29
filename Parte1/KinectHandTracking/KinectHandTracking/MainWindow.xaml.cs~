@@ -225,7 +225,7 @@ namespace KinectHandTracking
 		}
         }
 
-	Boolean InGameConditions(Joint head){  //Check correct depth during the game
+	Boolean InGameConditions(Joint head){
 		if(head.Position.Z < 1.0)
 			Countdown.Text = "Go Back";
 		else if(head.Position.Z > 1.35)

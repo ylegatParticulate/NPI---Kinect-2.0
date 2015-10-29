@@ -1,4 +1,4 @@
-﻿using Microsoft.Kinect;
+using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,12 +34,6 @@ namespace KinectHandTracking
 
         UIElement[] blockArray;
 
-	//Hello World gesture
-	Boolean waveRight;
-	Boolean waveLeft;
-	int waveCount;
-	Stopwatch waveWatch;
-
         #endregion
 
         #region Constructor
@@ -50,17 +44,9 @@ namespace KinectHandTracking
 
             countdownIsStored = false;
             gameStarted = false;
-
-	    countdown = new Stopwatch();
-
-            //letBoxesAppear();
+            letBoxesAppear();
             
-		//Hello World gesture
-		waveRight = false;
-		waveLeft = false;
-		waveCount = 0;
-
-		waveWatch = new Stopwatch();           
+           
 
         }
 
@@ -99,16 +85,11 @@ namespace KinectHandTracking
         {
            /* 
             BitmapImage box = new BitmapImage(new Uri("D:/UNI/WiSe1516/NPI/KinectHandTracking/KinectHandTracking/box.jpg"));
-
             UIElement hola = new UIElement();
-
             hola.
             
-
             canvas.Children.Add()
             */
-
-
             Random rnd = new Random();
             int nextmar1= 4;
 
@@ -145,135 +126,67 @@ namespace KinectHandTracking
 
 
         }
-        void CheckInitialConditions(Joint head){            
-		if (head.Position.Z > 1.1 && head.Position.Z < 1.31){
+        void CheckInitialConditions(Point headPoint){
+            
 
-                        Point headPoint = head.Scale(_sensor.CoordinateMapper);
-			Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
+            Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
 
-			invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
-			invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
 
-			double distance = Math.Sqrt(
-				Math.Pow(
-					headPoint.X > invisibleHeadPoint.X ?
-					invisibleHeadPoint.X - headPoint.X :
-					headPoint.X - invisibleHeadPoint.X
-				, 2)
-				 +
-				Math.Pow(
-					headPoint.Y > invisibleHeadPoint.Y ?
-					invisibleHeadPoint.Y - headPoint.Y :
-					headPoint.Y - invisibleHeadPoint.Y
-				, 2)
-			);
+            invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
+            invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
 
-			if (distance < 61){
-				pink.Visibility = System.Windows.Visibility.Hidden;
-				green.Visibility = System.Windows.Visibility.Visible;
+            double distance = Math.Sqrt(Math.Pow(headPoint.X > invisibleHeadPoint.X ? invisibleHeadPoint.X - headPoint.X : headPoint.X - invisibleHeadPoint.X, 2) + Math.Pow(headPoint.Y > invisibleHeadPoint.Y ? invisibleHeadPoint.Y - headPoint.Y : headPoint.Y - invisibleHeadPoint.Y, 2));
 
-				//Countdown.Text = "Stay!!!";
+            if (distance < 61)
+            {
+                pink.Visibility = System.Windows.Visibility.Hidden;
+                green.Visibility = System.Windows.Visibility.Visible;
 
-				//countdown part :)
+                //Countdown.Text = "Stay!!!";
 
-				if (countdownIsStored){
+                //countdown part :)
 
-				    int elapsed =  5 - countdown.Elapsed.Seconds;
+                if (countdownIsStored){
+                                            
 
-				    Countdown.Text = elapsed.ToString();
+                    int elapsed =  5 - countdown.Elapsed.Seconds;
 
-				    if (elapsed < 1){
 
-					Countdown.Text = "STAAAART";
+                    Countdown.Text = elapsed.ToString();
 
-					//Countdown.Foreground =  Control.FontStyleProperty.PropertyType.;
+                    if (elapsed < 1)
+                    {
+                        Countdown.Text = "STAAAART";
 
-					//Awesome stuff here
+                        //Countdown.Foreground =  Control.FontStyleProperty.PropertyType.;
 
-					green.Visibility = System.Windows.Visibility.Hidden;
-					//letBoxesAppear();
+                        //Awesome stuff here
 
-					gameStarted = true;
-				    }
-				} 
-				else{
-				    //countdown = new Stopwatch();
-				    countdown.Start();
-				    countdownIsStored = true;
-				}
-			}
-			else{
-			countdownIsStored = false;
+                        green.Visibility = System.Windows.Visibility.Hidden;
+                        letBoxesAppear();
 
-			pink.Visibility = System.Windows.Visibility.Visible;
-			green.Visibility = System.Windows.Visibility.Hidden;
+                        gameStarted = true;
 
-			Countdown.Text = "Depth is OK";
-			}
+                    }
+                                                
+                } 
+                else{
+                    countdown = new Stopwatch();
+                    countdown.Start();
+                    countdownIsStored = true;
 
-		}
-		else{
-			if (head.Position.Z < 1.1)
-			    Countdown.Text = "Back!!!!";
-			else
-			    Countdown.Text = "Forwardddd!!!!";
+                }
+            }
+            else
+            {
+                countdownIsStored = false;
 
-			countdownIsStored = false;
+                pink.Visibility = System.Windows.Visibility.Visible;
+                green.Visibility = System.Windows.Visibility.Hidden;
 
-			pink.Visibility = System.Windows.Visibility.Visible;
-			green.Visibility = System.Windows.Visibility.Hidden;
-		}
+                Countdown.Text = "Depth is OK";
+            }
         }
-
-	Boolean InGameConditions(Joint head){  //Check correct depth during the game
-		if(head.Position.Z < 1.0)
-			Countdown.Text = "Go Back";
-		else if(head.Position.Z > 1.35)
-			Countdown.Text = "Forward";
-		else
-			return true;	
-
-		return false;
-	}
-
-	void PlayingGame(Joint handRight, Joint ElbowRight){
-		if(handRight.Position.Y > ElbowRight.Position.Y && waveWatch.Elapsed.Seconds < 1){
-			if(handRight.Position.X > ElbowRight.Position.X){
-				if(!waveRight){
-					waveWatch.Stop();
-					waveWatch.Start();
-
-					waveRight = true;
-					waveLeft = false;
-
-					waveCount++;
-				}
-			}
-			else{
-				if(!waveLeft){
-					waveWatch.Stop();
-					waveWatch.Start();
-
-					waveRight = false;
-					waveLeft = true;
-
-					waveCount++;
-				}
-			}
-
-			if(waveCount > 4)
-				Countdown.Text = "Hello World!!";
-		}
-		else{
-			waveRight = false;
-			waveLeft = false;
-			waveCount = 0;
-
-			Countdown.Text = "";
-			waveWatch.Stop();
-		}
-	}
-
 
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
@@ -324,7 +237,52 @@ namespace KinectHandTracking
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
 
                                 Joint head = body.Joints[JointType.Head];
-				Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
+                                Point headPoint = head.Scale(_sensor.CoordinateMapper);
+
+                                //headInfo.Text = headPoint.X.ToString();
+                                //marginHead.Text = invisibleHeadPoint.X.ToString();
+
+
+                                //DistanceBox.Text = distance.ToString();
+
+                                //canvas.DrawLine(head, invisibleHeadPoint, _sensor.CoordinateMapper);
+
+
+                                if (head.Position.Z > 1.1 && head.Position.Z < 1.31)
+                                {
+                                    if (!gameStarted) {
+                                        CheckInitialConditions(headPoint);
+
+                                        
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+                                    if (!gameStarted) { 
+                                        if (head.Position.Z < 1.1)
+                                            Countdown.Text = "Back!!!!";
+                                        else
+                                            Countdown.Text = "Forwardddd!!!!";
+
+
+                                        countdownIsStored = false;
+
+                                        pink.Visibility = System.Windows.Visibility.Visible;
+                                        green.Visibility = System.Windows.Visibility.Hidden;
+                                    }
+
+                                }
+
+
+                                //DepthBox.Text = head.Position.Z.ToString();
+
+
+                               
+                                Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
                                 Joint ShoulderLeft = body.Joints[JointType.ShoulderLeft];
                                 Joint ShoulderRight= body.Joints[JointType.ShoulderRight];
 
@@ -339,35 +297,6 @@ namespace KinectHandTracking
                                 Joint handLeft = body.Joints[JointType.HandLeft];
                                 Joint thumbLeft = body.Joints[JointType.ThumbLeft];
 
-
-
-                                //headInfo.Text = headPoint.X.ToString();
-                                //marginHead.Text = invisibleHeadPoint.X.ToString();
-
-
-                                //DistanceBox.Text = distance.ToString();
-
-                                //canvas.DrawLine(head, invisibleHeadPoint, _sensor.CoordinateMapper);
-
-
-                                if (!gameStarted){
-                         	        CheckInitialConditions(head);		                        
-				}
-				else{
-					if(InGameConditions(head))
-						PlayingGame();
-				}
-
-				/*
-                                if (head.Position.Y < handLeft.Position.Y){
-                                    Hola.Text = "HOLAAA";
-                                }
-                                else
-                                {
-                                    Hola.Text = "Not hola";
-
-                                }                                
-				*/
                                 canvas.DrawPoint(head,_sensor.CoordinateMapper);
                                 canvas.DrawPoint(SpineShoulderJoint,_sensor.CoordinateMapper);
                                 canvas.DrawPoint(ShoulderLeft, _sensor.CoordinateMapper);
@@ -392,7 +321,18 @@ namespace KinectHandTracking
                                 canvas.DrawLine(ElbowRightJoint, WristRightJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(ElbowLeftJoint, WristLeftJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(WristLeftJoint, handLeft, _sensor.CoordinateMapper);
-                                canvas.DrawLine(WristRightJoint, handRight, _sensor.CoordinateMapper);                               
+                                canvas.DrawLine(WristRightJoint, handRight, _sensor.CoordinateMapper);
+
+                                if (head.Position.Y < handLeft.Position.Y)
+                                {
+                                    Hola.Text = "HOLAAA";
+                                }
+                                else
+                                {
+                                    Hola.Text = "Not hola";
+
+                                }
+
 
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
                                 // Find the hand states
@@ -487,4 +427,4 @@ namespace KinectHandTracking
 
         }
     }
-}
+
