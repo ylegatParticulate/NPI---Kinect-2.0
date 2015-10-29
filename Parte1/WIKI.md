@@ -12,12 +12,12 @@ Kinect usa a nivel de código lo que se llama “streams”, que son como capas 
 Nosotros vamos a detectar la parte de los brazos y la cabeza, y los usaremos para comprobar si interactúan con objetos virtuales. 
 
 --
-### 3 ¿CÓMO PINTAMOS A UNA PERSONA?
-De las personas, Kinect detecta las articulaciones, lo que hace que para poder mostrar la persona capturada, es necesario "pintarla" por pantalla, y para pintarla tenemos que transformarla en elementos que puedan ser pintados, dichos elementos son los puntos y las líneas, esto quiere decir que hay que realizar la conversión. Para ello, haciendo uso de las funciones preestablecidas, definiremos elementos punto y línea basandose en las coordenadas de las articulaciones detectadas y para correctamente escalarlos a la pantalla usaremos el Coordinate Mapper, o Mapeador de Coordenadas. El resultado final es una especie de esqueleto de puntos y líneas.
+### 3 ¿CÓMO DIBUJAMOS UNA PERSONA?
+De las personas, Kinect detecta las articulaciones, lo que hace que para poder mostrar la persona capturada, es necesario "pintarla" por pantalla, y para pintarla tenemos que transformarla en elementos que puedan ser pintados, dichos elementos son los puntos y las líneas, esto quiere decir que hay que realizar la conversión. Para ello, haciendo uso de las funciones preestablecidas, definiremos elementos punto y línea basándose en las coordenadas de las articulaciones detectadas y para correctamente escalarlos a la pantalla usaremos el Coordinate Mapper, o Mapeador de Coordenadas. El resultado final es una especie de esqueleto de puntos y líneas.
 
 --
 ### 4 POSICIÓN FIJA
-Usaremos una posición fija para controlar donde el usuario va a encontrarse inicialmente para que correctamente pueda interactuar con Kinect. En nuestro caso nos hemos guiado por el depth stream para controlar la distancia a la que se encuentra del dispositivo, a lo que hay que añadirle que el usuario se encuentre en el centro de la pantalla, para ello medimos la distancia que hay desde su cabeza hasta un punto invisible que se encuentra en el centro de ésta. Para controlar que el usuario llegue hasta dicha posición, aparecera un texto indicativo en la pantalla informandole de hacia donde debe moverse para alcanzar la posición, además de una silueta que cambiará de color una vez alcanzado ésta. Cuando ya se encuentra en la posición inicial usamos una cuenta atrás para que no se desplace del sítio hasta que empieze el juego.
+Usaremos una posición fija para controlar donde el usuario va a encontrarse inicialmente para que correctamente pueda interactuar con Kinect. En nuestro caso nos hemos guiado por el depth stream para controlar la distancia a la que se encuentra del dispositivo, a lo que hay que añadirle que el usuario se encuentre en el centro de la pantalla, para ello medimos la distancia que hay desde su cabeza hasta un punto invisible que se encuentra en el centro de ésta. Para controlar que el usuario llegue hasta dicha posición, aparecerá un texto indicativo en la pantalla informándole de hacia donde debe moverse para alcanzar la posición, además de una silueta que cambiará de color una vez alcanzado ésta. Cuando ya se encuentra en la posición inicial usamos una cuenta atrás para que no se desplace del sitio hasta que empiece el juego.
 
 --
 ### 5 MOVIMIENTO
@@ -37,9 +37,9 @@ Hasta ahora, el único gesto que hemos reconocido es el de un simple saludo con 
 ### 7 CÓDIGO
 El código es una inspiración directa de [este tutorial](http://pterneas.com/2014/03/21/kinect-for-windows-version-2-hand-tracking/) de reconocimiento de manos. Quiere esto decir que hemos mantenido intacta algunas funciones para configurar y poner en marcha el Kinect y sus detectores, pero hemos modificado altamente, hasta el punto de reescribir el resto de código pese a que hemos mantenido los nombres o el código original en forma de comentarios. Por otro lado, el código puede ser altamente optimizado ya que se pueden reutilizar objetos tras cada iteración en lugar de volver a crearlos.
 Para controlar el estado de la aplicación, hemos definido Enumeraciones (enum) con los distintos estados del juego: llegar a la posición inicial, transición entre la posición inicial y la ejecución, y la ejecución.
-La **posición inicial** es un control más o menos extricto de la distancia al dispositivo y la situación respecto a la pantalla.
+La **posición inicial** es un control más o menos estricto de la distancia al dispositivo y la situación respecto a la pantalla.
 La **transición** simplemente da a entender al usuario que el juego va a comenzar.
-Y la **ejecución**, es en sí el juego, aunque también llevará un control no extricto de la situación del jugador, deteniendo el juego si llega a distancias no deseadas.
+Y la **ejecución**, es en sí el juego, aunque también llevará un control no estricto de la situación del jugador, deteniendo el juego si llega a distancias no deseadas.
 
 --
 ### 8 INTERACCIÓN CON EL USUARIO
@@ -55,4 +55,4 @@ En nuestra aplicación hacemos uso de una silueta transparente y de una caja de 
  - No es obvio (y no lo hemos conseguido), el cambiar de color el bloque de texto una vez haya ocurrido algún suceso.
  - No era obvio que se usase el objeto Stopwatch para medir el tiempo ya que en la mayoría de lenguajes de programación se usa la clase de fecha (también existente en C# pero sin este uso o no se ha conseguido de esta forma).
  - No es obvio en absoluto como clonar objetos sin hacer uso de funciones.
- - Por defecto, las funciones pasan todos los objetos por valor (hacen una copia), en lugar de pasarlos por referencia, lo que hace que el código sea generalmente ineficiente si esto se desconoce, aunque se puede **solucionar** añadiendo (ref) tanto en la definición del parámetro como en el parámetro en sí enviado.
+ - Por defecto, las funciones pasan todos los objetos por valor (hacen una copia), en lugar de pasarlos por referencia, lo que hace que el código sea generalmente ineficiente si esto se desconoce, aunque se puede **solucionar** añadiendo **ref** tanto en la definición del parámetro como en el parámetro en sí enviado.
