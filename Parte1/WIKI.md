@@ -1,14 +1,3 @@
-hola hacemos una wiki :) en español.
-1. How does kinect work --> understand
-2. kinect detects person
-3. draw person to screen
-4. fixed position
-5. movement
-6. gesture recognition
-7. code
-8. interaction with the user
-9. Problems we had
-
 ### 1 ¿CÓMO FUNCIONA KINECT?
 Kinect es un sensor de captación que reconoce entornos mediantes diversos sensores. Entre ellos tenemos detectores de sonido y de movimiento, además de infrarrojos y una cámara de vídeo.
 Para trabajar con Kinect usaremos Visual Studio, lo que quiere decir que trabajaremos por un lado con detectores y por otro con el resultado de las operaciones realizadas con lo detectado. 
