@@ -12,7 +12,7 @@
                 <Image Name="camera" Grid.ColumnSpan="2" />
                 <Canvas Name="canvas" Margin="20,0,0,33" Grid.ColumnSpan="2" />
                 <Ellipse x:Name="InvisibleHead" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="216" Margin="919,311,0,0" Stroke="Black" VerticalAlignment="Top" Width="212" Visibility="Hidden"/>
-                <TextBox x:Name="Hola" HorizontalAlignment="Left" Height="130" Margin="1477,580,0,0" TextWrapping="Wrap" Text="hola" VerticalAlignment="Top" Width="399" TextChanged="TextBox_TextChanged" SpellCheck.IsEnabled="True" FontSize="72" Visibility="Hidden" Grid.ColumnSpan="2"/>
+                <TextBox x:Name="Hola" HorizontalAlignment="Left" Height="130" Margin="1477,580,0,0" TextWrapping="Wrap" Text="hola" VerticalAlignment="Top" Width="399" TextChanged="TextBox_TextChanged" SpellCheck.IsEnabled="True" FontSize="72" Grid.ColumnSpan="2"/>
                 <TextBox x:Name="headInfo" HorizontalAlignment="Left" Height="92" Margin="1563,34,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="313" FontSize="48" TextChanged="headInfo_TextChanged" Visibility="Hidden" Grid.ColumnSpan="2"/>
                 <TextBox x:Name="marginHead" HorizontalAlignment="Left" Height="91" Margin="1563,162,0,0" TextWrapping="Wrap" Text="-" VerticalAlignment="Top" Width="313" TextChanged="TextBox_TextChanged_1" FontSize="48" Visibility="Hidden" Grid.ColumnSpan="2"/>
                 <TextBox x:Name="DistanceBox" HorizontalAlignment="Left" Height="89" Margin="1563,292,0,0" TextWrapping="Wrap" Text="Distance" VerticalAlignment="Top" Width="313" FontSize="48" Visibility="Hidden" Grid.ColumnSpan="2"/>

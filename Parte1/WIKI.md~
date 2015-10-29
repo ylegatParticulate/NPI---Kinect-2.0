@@ -66,4 +66,4 @@ En nuestra aplicación hacemos uso de una silueta transparente y de una caja de 
  - No es obvio (y no lo hemos conseguido), el cambiar de color el bloque de texto una vez haya ocurrido algún suceso.
  - No era obvio que se usase el objeto Stopwatch para medir el tiempo ya que en la mayoría de lenguajes de programación se usa la clase de fecha (también existente en C# pero sin este uso o no se ha conseguido de esta forma).
  - No es obvio en absoluto como clonar objetos sin hacer uso de funciones.
- - Por defecto, las funciones pasan todos los objetos por valor (hacen una copia), en lugar de pasarlos por referencia, lo que hace que el código sea generalmente ineficiente si esto se desconoce, aunque se puede **solucionar** añadiendo (ref) tanto en la definición del parámetro como en el parámetro en sí enviado.
+ - Por defecto, las funciones pasan todos los objetos por valor (hacen una copia), en lugar de pasarlos por referencia, lo que hace que el código sea generalmente ineficiente si esto se desconoce, aunque se puede solucionar añadiendo (ref) tanto en la definición del parámetro como en el parámetro en sí enviado.
