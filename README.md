@@ -27,9 +27,9 @@ Claudia Schwenger
 10. [Vitruvius](http://pterneas.com/2015/09/26/vitruvius/)
 
 ######Some useful links
+- [Good idea for games](https://forums.oculus.com/viewtopic.php?t=832#p8548)
 
-[Read the github tutorial](https://guides.github.com/activities/hello-world/).
-
-[Read here to learn how to write in github](https://help.github.com/articles/markdown-basics/).
-
-[Read here to learn to do fancy stuff](https://help.github.com/articles/github-flavored-markdown/).
+######Github Tutorials
+- [Read the github tutorial](https://guides.github.com/activities/hello-world/).
+- [Read here to learn how to write in github](https://help.github.com/articles/markdown-basics/).
+- [Read here to learn to do fancy stuff](https://help.github.com/articles/github-flavored-markdown/).
