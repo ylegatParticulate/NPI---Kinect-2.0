@@ -4,14 +4,16 @@ Hello, this site is under construction but soon it will be filled with awesome s
 
 ####Group members:
 
-Carlos Ibáñez Partera
+[Carlos Ibáñez Partera](https://github.com/Caribpa)
 
-Yessika Legat
+[Yessika Legat](https://github.com/ylegatParticulate)
 
-Claudia Schwenger
+[Claudia Schwenger](https://github.com/Clau94)
 
 --
-**Check the** [objectives](TODO.md)
+**Check the** [first practice](Parte1/README.md).
+
+**Check the** [objectives](TODO.md).
 
 ######Awesome Tutorial
 
