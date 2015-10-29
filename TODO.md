@@ -12,8 +12,8 @@
 
 #####TODO Basic stuff
 
-- [ ] Once in correct position, 7 secs and start game
-- [ ] Print a huge START!! and remove the silhoute
+- [x] Once in correct position, 5 secs and start game
+- [x] Print a huge START!! and remove the silhoute
 - [ ] Check if head is trackable all the time
 - [ ] Fancy GUI
 - [ ] Tutorial
