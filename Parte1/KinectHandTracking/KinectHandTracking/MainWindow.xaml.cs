@@ -34,11 +34,22 @@ namespace KinectHandTracking
 
         UIElement[] blockArray;
 
-	//Hello World gesture
-	Boolean waveRight;
-	Boolean waveLeft;
-	int waveCount;
-	Stopwatch waveWatch;
+	    //Hello World gesture
+
+        struct WaveHand {
+            public static Boolean isWaving;
+
+            public Joint hand;
+            public Joint elbow;
+
+	        public Boolean waveRight;
+	        public Boolean waveLeft;
+	        public int waveCount;
+	        public Stopwatch waveWatch;
+        }
+
+        WaveHand waveRightHand;
+        WaveHand waveLeftHand;
 
         #endregion
 
@@ -51,16 +62,28 @@ namespace KinectHandTracking
             countdownIsStored = false;
             gameStarted = false;
 
-	    countdown = new Stopwatch();
+	        countdown = new Stopwatch();
 
             //letBoxesAppear();
             
-		//Hello World gesture
-		waveRight = false;
-		waveLeft = false;
-		waveCount = 0;
+		    //Hello World gesture
+            waveRightHand = new WaveHand();
 
-		waveWatch = new Stopwatch();           
+            waveRightHand.waveRight = false;
+            waveRightHand.waveLeft = false;
+            waveRightHand.waveCount = 0;
+            waveRightHand.waveWatch = new Stopwatch();
+            
+
+
+            waveLeftHand = new WaveHand();
+
+            waveLeftHand.waveRight = false;
+            waveLeftHand.waveLeft = false;
+            waveLeftHand.waveCount = 0;
+            waveLeftHand.waveWatch = new Stopwatch();
+
+            WaveHand.isWaving = false;
 
         }
 
@@ -139,16 +162,13 @@ namespace KinectHandTracking
             if (box4.AreAnyTouchesCaptured)
             {
                 Countdown.Text = "Tortuga";
-            }
-           
-           
-
+            }           
 
         }
         void CheckInitialConditions(Joint head){            
 		if (head.Position.Z > 1.1 && head.Position.Z < 1.31){
 
-                        Point headPoint = head.Scale(_sensor.CoordinateMapper);
+            Point headPoint = head.Scale(_sensor.CoordinateMapper);
 			Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
 
 			invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
@@ -198,6 +218,7 @@ namespace KinectHandTracking
 				} 
 				else{
 				    //countdown = new Stopwatch();
+                    countdown.Reset();
 				    countdown.Start();
 				    countdownIsStored = true;
 				}
@@ -236,41 +257,54 @@ namespace KinectHandTracking
 		return false;
 	}
 
-	void PlayingGame(Joint handRight, Joint ElbowRight){
-		if(handRight.Position.Y > ElbowRight.Position.Y && waveWatch.Elapsed.Seconds < 1){
-			if(handRight.Position.X > ElbowRight.Position.X){
-				if(!waveRight){
-					waveWatch.Stop();
-					waveWatch.Start();
+	void WaveWorld(ref WaveHand waveHand){
+        if (waveHand.hand.Position.Y > waveHand.elbow.Position.Y && waveHand.waveWatch.Elapsed.Seconds < 1)
+        {
 
-					waveRight = true;
-					waveLeft = false;
+            if (waveHand.hand.Position.X > waveHand.elbow.Position.X)
+            {
 
-					waveCount++;
+                if (!waveHand.waveRight)
+                {
+                    waveHand.waveWatch.Reset();
+                    waveHand.waveWatch.Start();
+
+                    waveHand.waveRight = true;
+                    waveHand.waveLeft = false;
+
+                    waveHand.waveCount++;      
 				}
 			}
 			else{
-				if(!waveLeft){
-					waveWatch.Stop();
-					waveWatch.Start();
+                if (!waveHand.waveLeft)
+                {
+                    waveHand.waveWatch.Reset();
+                    waveHand.waveWatch.Start();
 
-					waveRight = false;
-					waveLeft = true;
+                    waveHand.waveRight = false;
+                    waveHand.waveLeft = true;
 
-					waveCount++;
+                    waveHand.waveCount++;
+                    
 				}
 			}
 
-			if(waveCount > 4)
-				Countdown.Text = "Hello World!!";
+            if (waveHand.waveCount > 4) {
+                Countdown.Text = "Hello World!!";
+
+                WaveHand.isWaving = true;
+            }
 		}
 		else{
-			waveRight = false;
-			waveLeft = false;
-			waveCount = 0;
+            waveHand.waveRight = false;
+            waveHand.waveLeft = false;
+            waveHand.waveCount = 0;
 
-			Countdown.Text = "";
-			waveWatch.Stop();
+            if(!WaveHand.isWaving)
+			    Countdown.Text = "Wave!!";
+            waveHand.waveWatch.Reset();
+
+            WaveHand.isWaving = false;
 		}
 	}
 
@@ -324,7 +358,7 @@ namespace KinectHandTracking
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
 
                                 Joint head = body.Joints[JointType.Head];
-				Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
+				                Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
                                 Joint ShoulderLeft = body.Joints[JointType.ShoulderLeft];
                                 Joint ShoulderRight= body.Joints[JointType.ShoulderRight];
 
@@ -352,11 +386,22 @@ namespace KinectHandTracking
 
                                 if (!gameStarted){
                          	        CheckInitialConditions(head);		                        
-				}
-				else{
-					if(InGameConditions(head))
-						PlayingGame();
-				}
+				                }
+				                else{
+                                    if (InGameConditions(head))
+                                    {
+                                        waveRightHand.hand = handRight;
+                                        waveRightHand.elbow = ElbowRightJoint;
+
+                                        WaveWorld(ref waveRightHand);
+
+
+                                        waveLeftHand.hand = handLeft;
+                                        waveLeftHand.elbow = ElbowLeftJoint;
+
+                                        WaveWorld(ref waveLeftHand);
+                                    }
+				                }
 
 				/*
                                 if (head.Position.Y < handLeft.Position.Y){
