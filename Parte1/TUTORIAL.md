@@ -176,6 +176,12 @@ Boolean InGameConditions(Joint head){  //Check correct depth during the game
 ###El juego
 
 ```csharp
+/*
+  Hay que destacar el ref en la definición del parámetro.
+  Esto quiere decir que lo estamos pasando por referencia en lugar de por valor, como ocurre por defecto.
+  Así podemos modificar el valor de las variables internas del struct.
+*/
+
 void WaveWorld(ref WaveHand waveHand){
 
     /*
