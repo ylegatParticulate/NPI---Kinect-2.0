@@ -19,7 +19,7 @@ public static Point Scale(this Joint joint, CoordinateMapper mapper)
 }
 ```
 
-#######Dibujamos y "escalamos" fácilmente un punto en solo una línea 
+######Dibujamos y "escalamos" fácilmente un punto en solo una línea 
 
 ```csharp
 canvas.DrawPoint(handRight, _sensor.CoordinateMapper);
@@ -84,6 +84,10 @@ public static void DrawLine(this Canvas canvas, Joint first, Joint second, Coord
 enum GameState { Initial, ShowStart, Running };
 ```
 
+--
+
+##Estructura de control
+
 ######Creamos una estructura para controlar de forma fácil los componentes de nuestro juego
 
 ```csharp
@@ -100,13 +104,17 @@ struct WaveHand {
 }
 ```
 
+--
+
+##Controles de condiciones
+
 ######Para controlar el tiempo, usamos la clase preestablecida
 
 ```csharp
 Stopwatch countdown;
 ```
 
-#######Control de las condiciones iniciales del juego
+######Control de las condiciones iniciales del juego
 
 ```csharp
 void CheckInitialConditions(Joint head){            
@@ -144,7 +152,6 @@ void CheckInitialConditions(Joint head){
 }
 ```
 
-
 ######Control durante el juego
 
 ```csharp
@@ -162,7 +169,9 @@ Boolean InGameConditions(Joint head){  //Check correct depth during the game
 }
 ```
 
-######El juego, consistente en un saludo con la mano, pasa aquí:
+--
+
+##El juego
 
 ```csharp
 void WaveWorld(ref WaveHand waveHand){
@@ -225,7 +234,9 @@ void WaveWorld(ref WaveHand waveHand){
 }
 ```
 
-######El juego 
+--
+
+##La aplicación completa
 
 ```csharp
 /*
