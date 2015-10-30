@@ -1,4 +1,6 @@
-##Basic detection
+#Tutorial
+
+###Definiciones básicas
 
 ######Para pasar un Joint a un Punto y correctamete llevarlo al plano de dibujo:
 
@@ -76,7 +78,7 @@ public static void DrawLine(this Canvas canvas, Joint first, Joint second, Coord
 
 --
 
-##Game States
+###Game States
 
 ######Es mucho más fácil controlar el estado del juego con enums
 
@@ -86,7 +88,7 @@ enum GameState { Initial, ShowStart, Running };
 
 --
 
-##Estructura de control
+###Estructura de control
 
 ######Creamos una estructura para controlar de forma fácil los componentes de nuestro juego
 
@@ -106,7 +108,7 @@ struct WaveHand {
 
 --
 
-##Controles de condiciones
+###Controles de condiciones
 
 ######Para controlar el tiempo, usamos la clase preestablecida
 
@@ -171,7 +173,7 @@ Boolean InGameConditions(Joint head){  //Check correct depth during the game
 
 --
 
-##El juego
+###El juego
 
 ```csharp
 void WaveWorld(ref WaveHand waveHand){
@@ -236,7 +238,7 @@ void WaveWorld(ref WaveHand waveHand){
 
 --
 
-##La aplicación completa
+###La aplicación completa
 
 ```csharp
 /*
