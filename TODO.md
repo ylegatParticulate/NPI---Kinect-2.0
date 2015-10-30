@@ -17,7 +17,7 @@
 - [x] Check if head is trackable all the time.
 - [ ] Fancy GUI.
 - [x] Wiki.
-- [ ] Tutorial.
+- [x] Tutorial.
 - [x] Problems and solutions.
 
 ######For the future 
