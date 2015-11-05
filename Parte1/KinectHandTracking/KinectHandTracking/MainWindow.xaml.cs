@@ -40,15 +40,15 @@ namespace KinectHandTracking
 	//Hello World gesture
 
         struct WaveHand {
-		public static Boolean isWaving;
+		    public static Boolean isWaving;
 
-		public Joint hand;
-		public Joint elbow;
+		    public Joint hand;
+		    public Joint elbow;
 
-		public Boolean waveRight;
-		public Boolean waveLeft;
-		public int waveCount;
-		public Stopwatch waveWatch;
+		    public Boolean waveRight;
+		    public Boolean waveLeft;
+		    public int waveCount;
+		    public Stopwatch waveWatch;
         }
 
         WaveHand waveRightHand;
@@ -267,36 +267,36 @@ namespace KinectHandTracking
 	void WaveWorld(ref WaveHand waveHand){
         	if (waveHand.hand.Position.Y > waveHand.elbow.Position.Y && waveHand.waveWatch.Elapsed.Seconds < 1){
 
-			if (waveHand.hand.Position.X > waveHand.elbow.Position.X){
+			    if (waveHand.hand.Position.X > waveHand.elbow.Position.X){
 
-				if (!waveHand.waveRight){
-				    waveHand.waveWatch.Reset();
-				    waveHand.waveWatch.Start();
+				    if (!waveHand.waveRight){
+				        waveHand.waveWatch.Reset();
+				        waveHand.waveWatch.Start();
 
-				    waveHand.waveRight = true;
-				    waveHand.waveLeft = false;
+				        waveHand.waveRight = true;
+				        waveHand.waveLeft = false;
 
-				    waveHand.waveCount++;      
-				}
-			}
-			else{
-				if (!waveHand.waveLeft){
-				    waveHand.waveWatch.Reset();
-				    waveHand.waveWatch.Start();
+				        waveHand.waveCount++;      
+				    }
+			    }
+			    else{
+				    if (!waveHand.waveLeft){
+				        waveHand.waveWatch.Reset();
+				        waveHand.waveWatch.Start();
 
-				    waveHand.waveRight = false;
-				    waveHand.waveLeft = true;
+				        waveHand.waveRight = false;
+				        waveHand.waveLeft = true;
 
-				    waveHand.waveCount++;
+				        waveHand.waveCount++;
 				    
-				}
-			}
+				    }
+			    }
 
-			if (waveHand.waveCount > 4) {
-				Countdown.Text = "Hello World!!";
+			    if (waveHand.waveCount > 4) {
+				    Countdown.Text = "Hello World!!";
 
-				WaveHand.isWaving = true;
-			}
+				    WaveHand.isWaving = true;
+			    }
 		}
 		else{
 		    waveHand.waveRight = false;
@@ -362,7 +362,7 @@ namespace KinectHandTracking
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
 
                                 Joint head = body.Joints[JointType.Head];
-		                Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
+		                        Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
                                 Joint ShoulderLeft = body.Joints[JointType.ShoulderLeft];
                                 Joint ShoulderRight= body.Joints[JointType.ShoulderRight];
 
@@ -390,8 +390,8 @@ namespace KinectHandTracking
 				/*
                                 if (!gameStarted){
                          	        CheckInitialConditions(head);		                        
-		                }
-		                else{
+		                        }
+		                        else{
                                     if (InGameConditions(head))
                                     {
                                         waveRightHand.hand = handRight;
@@ -413,7 +413,7 @@ namespace KinectHandTracking
 						CheckInitialConditions(head);
 					break;
 					case GameState.ShowStart:
-						if(countdown.Elapsed.Seconds == 3){
+						if(countdown.Elapsed.Seconds == 2){
 							countdown.Reset();
 
 							actualState = GameState.Running;
@@ -424,17 +424,64 @@ namespace KinectHandTracking
 							waveRightHand.hand = handRight;
 							waveRightHand.elbow = ElbowRightJoint;
 
-							WaveWorld(ref waveRightHand);
+							//WaveWorld(ref waveRightHand);
 
 
 							waveLeftHand.hand = handLeft;
 							waveLeftHand.elbow = ElbowLeftJoint;
 
-							WaveWorld(ref waveLeftHand);
+							//WaveWorld(ref waveLeftHand);
+
+                            Point handPoint = handRight.Scale(_sensor.CoordinateMapper);
+
+                            Rectangle mirect = new Rectangle
+                            {
+
+                                Width = 40,
+                                Height = 40,
+                               
+                                StrokeThickness = 8,
+                                Stroke = new SolidColorBrush(Colors.Firebrick)
+                            };
+
+                            Canvas.SetLeft(mirect, handPoint.X - mirect.Width / 2);
+                            Canvas.SetTop(mirect, handPoint.Y - mirect.Height / 2);
+
+                            canvas.Children.Add(mirect);
+                            
+
+                            Rectangle thatThing = new Rectangle{
+                                Width = Aubergine.ActualWidth,
+                                Height = Aubergine.ActualHeight,
+                               
+                                StrokeThickness = 8,
+                                Stroke = new SolidColorBrush(Colors.Pink)
+                            };
+
+
+
+                            Canvas.SetLeft(thatThing, Aubergine.Margin.Left - 20);
+                            Canvas.SetTop(thatThing,Aubergine.Margin.Top);
+
+                            canvas.Children.Add(thatThing);
+
+                            
+
+                            //if (Aubergine.RenderedGeometry.Bounds.IntersectsWith(thatThing.RenderedGeometry.Bounds))
+                            //if (thatThing.RenderedGeometry.Bounds.IntersectsWith(mirect.RenderedGeometry.Bounds))
+                            if (new Rect(Aubergine.Margin.Left, Aubergine.Margin.Top +20, thatThing.Width, thatThing.Height).IntersectsWith(new Rect(handPoint.X, handPoint.Y, mirect.Width, mirect.Height)))
+                            //if (new Rect(Aubergine.Margin.Left, Aubergine.Margin.Top, 70, 70).IntersectsWith(mirect.RenderedGeometry.Bounds))
+                            {
+                              Countdown.Text = "Intersection!!!!!";
+                            }
+                            else
+                                Countdown.Text = "Nope";
+
+
 						}
 					break;	
 					default:
-                                        break;								
+                    break;								
 				}
 
 				/*
