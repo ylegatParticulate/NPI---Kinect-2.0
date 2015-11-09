@@ -12,14 +12,15 @@
 
 #####TODO Basic stuff
 
-- [x] Once in correct position, 5 secs and start game
-- [x] Print a huge START!! and remove the silhoute
-- [ ] Check if head is trackable all the time
-- [ ] Fancy GUI
-- [ ] Tutorial
-- [ ] Problems and solutions
+- [x] Once in correct position, 5 secs and start game.
+- [x] Print a huge START!! and remove the silhoute.
+- [x] Check if head is trackable all the time.
+- [ ] Fancy GUI.
+- [x] Wiki.
+- [x] Tutorial.
+- [x] Problems and solutions.
 
 ######For the future 
-- [ ] put Super Mario Blocks randomly in the frame appearing
-- [ ] Score
-- [ ] Time
+- [ ] put Super Mario Blocks randomly in the frame appearing.
+- [ ] Score.
+- [ ] Time.

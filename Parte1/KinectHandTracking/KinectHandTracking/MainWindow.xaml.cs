@@ -30,16 +30,42 @@ namespace KinectHandTracking
         Stopwatch countdown;
         Boolean countdownIsStored;
 
-        Boolean gameStarted;
+//        Boolean gameStarted;
+	
+	enum GameState { Initial, ShowStart, Running };
+	GameState actualState;
 
         UIElement[] blockArray;
 
 	//Hello World gesture
-	Boolean waveRight;
-	Boolean waveLeft;
-	int waveCount;
-	Stopwatch waveWatch;
 
+        struct WaveHand {
+		    public static Boolean isWaving;
+
+		    public Joint hand;
+		    public Joint elbow;
+
+		    public Boolean waveRight;
+		    public Boolean waveLeft;
+		    public int waveCount;
+		    public Stopwatch waveWatch;
+        }
+
+        WaveHand waveRightHand;
+        WaveHand waveLeftHand;
+
+        //hand Rect
+        Rect bodyRect;
+
+        //Intersection Rect
+        Rect intersectionRect;
+        Size intersectionSize;
+
+        //PinkSquare
+        Rectangle pinkRectangle;
+
+        //Random
+        Random randomGenerator;
         #endregion
 
         #region Constructor
@@ -49,19 +75,53 @@ namespace KinectHandTracking
             InitializeComponent();
 
             countdownIsStored = false;
-            gameStarted = false;
+//            gameStarted = false;
 
-	    countdown = new Stopwatch();
+	        actualState = GameState.Initial;
+
+	        countdown = new Stopwatch();
 
             //letBoxesAppear();
             
-		//Hello World gesture
-		waveRight = false;
-		waveLeft = false;
-		waveCount = 0;
+	    //Hello World gesture
+            waveRightHand = new WaveHand();
 
-		waveWatch = new Stopwatch();           
+            waveRightHand.waveRight = false;
+            waveRightHand.waveLeft = false;
+            waveRightHand.waveCount = 0;
+            waveRightHand.waveWatch = new Stopwatch();
+            
 
+
+            waveLeftHand = new WaveHand();
+
+            waveLeftHand.waveRight = false;
+            waveLeftHand.waveLeft = false;
+            waveLeftHand.waveCount = 0;
+            waveLeftHand.waveWatch = new Stopwatch();
+
+            WaveHand.isWaving = false;
+
+            bodyRect = new Rect(new Size(40, 40));
+
+            intersectionSize = new Size(0,0);
+            intersectionRect = new Rect(0,0,0,0);
+
+
+            pinkRectangle = new Rectangle
+            {
+                Width = 200,
+                Height = 200,
+
+                StrokeThickness = 8,
+                Stroke = new SolidColorBrush(Colors.Pink)
+            };
+
+            canvas.Children.Add(pinkRectangle);
+
+            randomGenerator = new Random();
+
+            UpdateUIRectangle(pinkRectangle, 900, 400);
         }
 
         #endregion
@@ -130,7 +190,7 @@ namespace KinectHandTracking
             }
            //String bla=  Convert.ToString(nextmar1);
         
-          // String nextBlock1 = "Block"+ nextmar1;
+           // String nextBlock1 = "Block"+ nextmar1;
        
             
             Countdown.Text = nextmar1.ToString();
@@ -139,16 +199,13 @@ namespace KinectHandTracking
             if (box4.AreAnyTouchesCaptured)
             {
                 Countdown.Text = "Tortuga";
-            }
-           
-           
-
+            }           
 
         }
-        void CheckInitialConditions(Joint head){            
+    void CheckInitialConditions(Joint head){            
 		if (head.Position.Z > 1.1 && head.Position.Z < 1.31){
 
-                        Point headPoint = head.Scale(_sensor.CoordinateMapper);
+            Point headPoint = head.Scale(_sensor.CoordinateMapper);
 			Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
 
 			invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
@@ -177,12 +234,13 @@ namespace KinectHandTracking
 				//countdown part :)
 
 				if (countdownIsStored){
-
 				    int elapsed =  5 - countdown.Elapsed.Seconds;
 
 				    Countdown.Text = elapsed.ToString();
 
 				    if (elapsed < 1){
+					countdown.Reset();
+					countdown.Start();
 
 					Countdown.Text = "STAAAART";
 
@@ -193,22 +251,24 @@ namespace KinectHandTracking
 					green.Visibility = System.Windows.Visibility.Hidden;
 					//letBoxesAppear();
 
-					gameStarted = true;
+					//gameStarted = true;
+					actualState = GameState.ShowStart;
 				    }
 				} 
 				else{
 				    //countdown = new Stopwatch();
+		            countdown.Reset();
 				    countdown.Start();
 				    countdownIsStored = true;
 				}
 			}
 			else{
-			countdownIsStored = false;
+				countdownIsStored = false;
 
-			pink.Visibility = System.Windows.Visibility.Visible;
-			green.Visibility = System.Windows.Visibility.Hidden;
+				pink.Visibility = System.Windows.Visibility.Visible;
+				green.Visibility = System.Windows.Visibility.Hidden;
 
-			Countdown.Text = "Depth is OK";
+				Countdown.Text = "Depth is OK";
 			}
 
 		}
@@ -223,7 +283,7 @@ namespace KinectHandTracking
 			pink.Visibility = System.Windows.Visibility.Visible;
 			green.Visibility = System.Windows.Visibility.Hidden;
 		}
-        }
+    }
 
 	Boolean InGameConditions(Joint head){  //Check correct depth during the game
 		if(head.Position.Z < 1.0)
@@ -236,43 +296,89 @@ namespace KinectHandTracking
 		return false;
 	}
 
-	void PlayingGame(Joint handRight, Joint ElbowRight){
-		if(handRight.Position.Y > ElbowRight.Position.Y && waveWatch.Elapsed.Seconds < 1){
-			if(handRight.Position.X > ElbowRight.Position.X){
-				if(!waveRight){
-					waveWatch.Stop();
-					waveWatch.Start();
+	void WaveWorld(ref WaveHand waveHand){
+        	if (waveHand.hand.Position.Y > waveHand.elbow.Position.Y && waveHand.waveWatch.Elapsed.Seconds < 1){
 
-					waveRight = true;
-					waveLeft = false;
+			    if (waveHand.hand.Position.X > waveHand.elbow.Position.X){
 
-					waveCount++;
-				}
-			}
-			else{
-				if(!waveLeft){
-					waveWatch.Stop();
-					waveWatch.Start();
+				    if (!waveHand.waveRight){
+				        waveHand.waveWatch.Reset();
+				        waveHand.waveWatch.Start();
 
-					waveRight = false;
-					waveLeft = true;
+				        waveHand.waveRight = true;
+				        waveHand.waveLeft = false;
 
-					waveCount++;
-				}
-			}
+				        waveHand.waveCount++;      
+				    }
+			    }
+			    else{
+				    if (!waveHand.waveLeft){
+				        waveHand.waveWatch.Reset();
+				        waveHand.waveWatch.Start();
 
-			if(waveCount > 4)
-				Countdown.Text = "Hello World!!";
+				        waveHand.waveRight = false;
+				        waveHand.waveLeft = true;
+
+				        waveHand.waveCount++;
+				    
+				    }
+			    }
+
+			    if (waveHand.waveCount > 4) {
+				    Countdown.Text = "Hello World!!";
+
+				    WaveHand.isWaving = true;
+			    }
 		}
 		else{
-			waveRight = false;
-			waveLeft = false;
-			waveCount = 0;
+		    waveHand.waveRight = false;
+		    waveHand.waveLeft = false;
+		    waveHand.waveCount = 0;
 
-			Countdown.Text = "";
-			waveWatch.Stop();
-		}
+		    if(!WaveHand.isWaving)
+			    Countdown.Text = "Wave!!";
+
+		    waveHand.waveWatch.Reset();
+
+		    WaveHand.isWaving = false;
+		}	
 	}
+        void setBodyRectPosition(Point point) {
+            bodyRect.X = point.X - bodyRect.Width/2;
+            bodyRect.Y = point.Y - bodyRect.Height/2;
+        }
+
+
+        Boolean JointRectIntersection(Joint joint, Rect rect)
+        {
+            setBodyRectPosition(joint.Scale(_sensor.CoordinateMapper));
+
+            return rect.IntersectsWith(bodyRect);
+        }
+
+        void UpdateUIRectangle(Rectangle rect, int X, int Y)
+        {
+            canvas.Children.Remove(rect);
+
+
+            Canvas.SetLeft(rect, X);
+            Canvas.SetTop(rect, Y);
+
+            canvas.Children.Add(rect);
+
+            //Workaround to prevent width/height for being 0 in the beginning
+            intersectionSize.Height = rect.ActualHeight == 0 ? rect.Height : rect.ActualHeight;
+            intersectionSize.Width = rect.ActualWidth == 0 ? rect.Width : rect.ActualWidth;
+
+            //I would like it to be this way
+            //intersectionSize.Height = rect.ActualHeight;
+            //intersectionSize.Width = rect.ActualWidth;
+
+            intersectionRect.Size = intersectionSize;
+
+            intersectionRect.X = Canvas.GetLeft(rect);
+            intersectionRect.Y = Canvas.GetTop(rect);
+        }
 
 
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
@@ -324,7 +430,7 @@ namespace KinectHandTracking
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
 
                                 Joint head = body.Joints[JointType.Head];
-				Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
+		                        Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
                                 Joint ShoulderLeft = body.Joints[JointType.ShoulderLeft];
                                 Joint ShoulderRight= body.Joints[JointType.ShoulderRight];
 
@@ -340,34 +446,71 @@ namespace KinectHandTracking
                                 Joint thumbLeft = body.Joints[JointType.ThumbLeft];
 
 
+				                switch (actualState){
+					                case GameState.Initial:
+						                CheckInitialConditions(head);
+					                break;
+					                case GameState.ShowStart:
+						                if(countdown.Elapsed.Seconds == 2){
+							                countdown.Reset();
 
-                                //headInfo.Text = headPoint.X.ToString();
-                                //marginHead.Text = invisibleHeadPoint.X.ToString();
+							                actualState = GameState.Running;
+						                }
+					                break;
+					                case GameState.Running:
+						                if (InGameConditions(head)){
+
+                                            /*
+							                    waveRightHand.hand = handRight;
+							                    waveRightHand.elbow = ElbowRightJoint;
+
+							                    WaveWorld(ref waveRightHand);
+
+							                    waveLeftHand.hand = handLeft;
+							                    waveLeftHand.elbow = ElbowLeftJoint;
+
+							                    WaveWorld(ref waveLeftHand);
+
+                                             */ 
+                                             
+                                            Point handPoint = handRight.Scale(_sensor.CoordinateMapper);
 
 
-                                //DistanceBox.Text = distance.ToString();
+                                            // This works
+                                            //intersectionRect.X = Aubergine.Margin.Left;
+                                            //intersectionRect.Y = Aubergine.Margin.Top + 20;
 
-                                //canvas.DrawLine(head, invisibleHeadPoint, _sensor.CoordinateMapper);
+                                            //This does not
+                                            //intersectionRect.X = thatThing.Margin.Left;
+                                            //intersectionRect.Y = thatThing.Margin.Top + 20;
+
+                                            //This does
+                                            //intersectionRect.X = Canvas.GetLeft(pinkRectangle);
+                                            //intersectionRect.Y = Canvas.GetTop(pinkRectangle);
 
 
-                                if (!gameStarted){
-                         	        CheckInitialConditions(head);		                        
-				}
-				else{
-					if(InGameConditions(head))
-						PlayingGame();
-				}
+                                            canvas.Children.Add(pinkRectangle);
 
-				/*
-                                if (head.Position.Y < handLeft.Position.Y){
-                                    Hola.Text = "HOLAAA";
-                                }
-                                else
-                                {
-                                    Hola.Text = "Not hola";
 
-                                }                                
-				*/
+                                            if ( JointRectIntersection(handRight,intersectionRect) |
+                                                 JointRectIntersection(handLeft, intersectionRect) |
+                                                 JointRectIntersection(head, intersectionRect)
+                                                )
+                                            {
+                                              Countdown.Text = "Intersection!!!!!";
+
+                                              UpdateUIRectangle(pinkRectangle, randomGenerator.Next(200, 1500), randomGenerator.Next(100, 800));
+                                            }
+                                            else
+                                                Countdown.Text = "Nope";
+
+						                }
+					                break;	
+					                default:
+                                    break;								
+				                }
+
+
                                 canvas.DrawPoint(head,_sensor.CoordinateMapper);
                                 canvas.DrawPoint(SpineShoulderJoint,_sensor.CoordinateMapper);
                                 canvas.DrawPoint(ShoulderLeft, _sensor.CoordinateMapper);
