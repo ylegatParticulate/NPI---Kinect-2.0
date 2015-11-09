@@ -23,7 +23,7 @@ namespace KinectHandTracking
     {
         #region Members
 
-        KinectSensor _sensor;
+        public static KinectSensor _sensor;
         MultiSourceFrameReader _reader;
         IList<Body> _bodies;
 
@@ -55,17 +55,34 @@ namespace KinectHandTracking
         WaveHand waveLeftHand;
 
         //hand Rect
-        Rect bodyRect;
+        public static Rect bodyRect;
 
         //Intersection Rect
-        Rect intersectionRect;
-        Size intersectionSize;
+        public static Rect intersectionRect;
+        public static Size intersectionSize;
 
         //PinkSquare
-        Rectangle pinkRectangle;
+        structRectangle pinkRectangle;
+        structRectangle blueRectangle;
+
 
         //Random
         Random randomGenerator;
+
+        //Struct for Rectangles and their elapsed time
+        struct structRectangle{
+            public Rectangle rect;
+            public int beginTime;
+            public HandState handState;
+        }
+
+        //Joint array
+        Joint[] jointArray;
+
+        //HandStates
+        HandState leftHandState;
+        HandState rightHandState;
+
         #endregion
 
         #region Constructor
@@ -102,13 +119,17 @@ namespace KinectHandTracking
 
             WaveHand.isWaving = false;
 
+            randomGenerator = new Random();
+
+
             bodyRect = new Rect(new Size(40, 40));
 
             intersectionSize = new Size(0,0);
             intersectionRect = new Rect(0,0,0,0);
 
+            pinkRectangle = new structRectangle();
 
-            pinkRectangle = new Rectangle
+            pinkRectangle.rect = new Rectangle
             {
                 Width = 200,
                 Height = 200,
@@ -117,11 +138,26 @@ namespace KinectHandTracking
                 Stroke = new SolidColorBrush(Colors.Pink)
             };
 
-            canvas.Children.Add(pinkRectangle);
+            pinkRectangle.beginTime = 0;
+            pinkRectangle.handState = HandState.Closed;
 
-            randomGenerator = new Random();
 
-            UpdateUIRectangle(pinkRectangle, 900, 400);
+            blueRectangle = new structRectangle();
+            blueRectangle.rect = new Rectangle
+            {
+                Width = 200,
+                Height = 200,
+
+                StrokeThickness = 8,
+                Stroke = new SolidColorBrush(Colors.Blue)
+            };
+
+            blueRectangle.beginTime = 0;
+            blueRectangle.handState = HandState.Lasso;
+
+
+            jointArray = new Joint[3];
+
         }
 
         #endregion
@@ -193,13 +229,7 @@ namespace KinectHandTracking
            // String nextBlock1 = "Block"+ nextmar1;
        
             
-            Countdown.Text = nextmar1.ToString();
-
-
-            if (box4.AreAnyTouchesCaptured)
-            {
-                Countdown.Text = "Tortuga";
-            }           
+            Countdown.Text = nextmar1.ToString();       
 
         }
     void CheckInitialConditions(Joint head){            
@@ -343,41 +373,56 @@ namespace KinectHandTracking
 		    WaveHand.isWaving = false;
 		}	
 	}
-        void setBodyRectPosition(Point point) {
-            bodyRect.X = point.X - bodyRect.Width/2;
-            bodyRect.Y = point.Y - bodyRect.Height/2;
+
+
+        void UpdateUIRectangle(Rectangle rect)
+        {
+            //canvas.Children.Remove(rect);
+
+            double width = canvas.ActualWidth == 0 ? canvas.Width : canvas.ActualWidth;
+            double height = canvas.ActualHeight == 0 ? canvas.Height : canvas.ActualHeight;
+
+            int x = randomGenerator.Next(0, 2) == 0 ? randomGenerator.Next((int)(width / 10), (int)(2 * width / 10)) : randomGenerator.Next((int)(7 * width / 10), (int)(9 * width / 10));
+            int y = randomGenerator.Next((int)(height / 10), (int)(9 * height / 10));
+
+            Canvas.SetLeft(rect, x);
+            Canvas.SetTop(rect, y);
+
+            //canvas.Children.Add(rect);
+
+
         }
 
+        void InteractionRectangle(ref structRectangle rectangle, Joint [] joints){
+            if (countdown.Elapsed.Seconds - rectangle.beginTime > 1)
+            {
 
-        Boolean JointRectIntersection(Joint joint, Rect rect)
-        {
-            setBodyRectPosition(joint.Scale(_sensor.CoordinateMapper));
+                canvas.Children.Add(rectangle.rect);
 
-            return rect.IntersectsWith(bodyRect);
-        }
+                Boolean intersection = false;
 
-        void UpdateUIRectangle(Rectangle rect, int X, int Y)
-        {
-            canvas.Children.Remove(rect);
+                foreach(Joint joint in joints){
+                    if(joint.Intersection(rectangle.rect)){
+                        intersection = true;
+                        break;
+                    }
+                }
+
+                if (intersection)
+                {
+                    if (rectangle.handState == rightHandState || rectangle.handState == leftHandState) {
+                        Countdown.Text = "Intersection!!!!!";                    
 
 
-            Canvas.SetLeft(rect, X);
-            Canvas.SetTop(rect, Y);
+                        UpdateUIRectangle(rectangle.rect);
+                        canvas.Children.Remove(rectangle.rect);
 
-            canvas.Children.Add(rect);
-
-            //Workaround to prevent width/height for being 0 in the beginning
-            intersectionSize.Height = rect.ActualHeight == 0 ? rect.Height : rect.ActualHeight;
-            intersectionSize.Width = rect.ActualWidth == 0 ? rect.Width : rect.ActualWidth;
-
-            //I would like it to be this way
-            //intersectionSize.Height = rect.ActualHeight;
-            //intersectionSize.Width = rect.ActualWidth;
-
-            intersectionRect.Size = intersectionSize;
-
-            intersectionRect.X = Canvas.GetLeft(rect);
-            intersectionRect.Y = Canvas.GetTop(rect);
+                        rectangle.beginTime = countdown.Elapsed.Seconds;
+                    }
+                }
+                else
+                    Countdown.Text = "Nope";
+            }
         }
 
 
@@ -407,27 +452,11 @@ namespace KinectHandTracking
 
                     foreach (var body in _bodies)
                     {
+
                         if (body != null)
                         {
                             if (body.IsTracked)
                             {
-                                /*
-                                 *  TODO 
-                                 * 
-                                 *  1. Once in correct position, 7 secs and start game
-                                 *  2. Print a huge START!! and remove the silhoute
-                                 *  3. Check if head is trackable all the time
-                                 *  4. Fancy GUI
-                                 *  5. Tutorial
-                                 *  6. Problems and solutions
-                                 * 
-                                 *  lllll - put Super Mario Blocks randomly in the frame appearing
-                                 *  llllll - Score
-                                 *  lllllll - Time
-                                 */
-
-
-                                //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
 
                                 Joint head = body.Joints[JointType.Head];
 		                        Joint SpineShoulderJoint = body.Joints[JointType.SpineShoulder];
@@ -446,6 +475,10 @@ namespace KinectHandTracking
                                 Joint thumbLeft = body.Joints[JointType.ThumbLeft];
 
 
+                                jointArray[0] = head;
+                                jointArray[1] = handLeft;
+                                jointArray[2] = handRight;
+
 				                switch (actualState){
 					                case GameState.Initial:
 						                CheckInitialConditions(head);
@@ -455,59 +488,30 @@ namespace KinectHandTracking
 							                countdown.Reset();
 
 							                actualState = GameState.Running;
+
+                                            UpdateUIRectangle(pinkRectangle.rect);
+                                            canvas.Children.Add(pinkRectangle.rect);
+
+                                            UpdateUIRectangle(blueRectangle.rect);
+                                            canvas.Children.Add(blueRectangle.rect);
+
+                                            countdown.Start();
 						                }
 					                break;
 					                case GameState.Running:
 						                if (InGameConditions(head)){
-
-                                            /*
-							                    waveRightHand.hand = handRight;
-							                    waveRightHand.elbow = ElbowRightJoint;
-
-							                    WaveWorld(ref waveRightHand);
-
-							                    waveLeftHand.hand = handLeft;
-							                    waveLeftHand.elbow = ElbowLeftJoint;
-
-							                    WaveWorld(ref waveLeftHand);
-
-                                             */ 
                                              
                                             Point handPoint = handRight.Scale(_sensor.CoordinateMapper);
 
+                                            rightHandState = body.HandRightState;
+                                            leftHandState = body.HandLeftState;
 
-                                            // This works
-                                            //intersectionRect.X = Aubergine.Margin.Left;
-                                            //intersectionRect.Y = Aubergine.Margin.Top + 20;
-
-                                            //This does not
-                                            //intersectionRect.X = thatThing.Margin.Left;
-                                            //intersectionRect.Y = thatThing.Margin.Top + 20;
-
-                                            //This does
-                                            //intersectionRect.X = Canvas.GetLeft(pinkRectangle);
-                                            //intersectionRect.Y = Canvas.GetTop(pinkRectangle);
-
-
-                                            canvas.Children.Add(pinkRectangle);
-
-
-                                            if ( JointRectIntersection(handRight,intersectionRect) |
-                                                 JointRectIntersection(handLeft, intersectionRect) |
-                                                 JointRectIntersection(head, intersectionRect)
-                                                )
-                                            {
-                                              Countdown.Text = "Intersection!!!!!";
-
-                                              UpdateUIRectangle(pinkRectangle, randomGenerator.Next(200, 1500), randomGenerator.Next(100, 800));
-                                            }
-                                            else
-                                                Countdown.Text = "Nope";
-
+                                            InteractionRectangle(ref pinkRectangle,jointArray);
+                                            InteractionRectangle(ref blueRectangle,jointArray);
 						                }
 					                break;	
 					                default:
-                                    break;								
+                                    break;		
 				                }
 
 
@@ -524,8 +528,10 @@ namespace KinectHandTracking
                                 // Draw hands and thumbs
                                 canvas.DrawPoint(handRight, _sensor.CoordinateMapper);
                                 canvas.DrawPoint(handLeft, _sensor.CoordinateMapper);
-                                //canvas.DrawPoint(thumbRight, _sensor.CoordinateMapper);
-                                //canvas.DrawPoint(thumbLeft, _sensor.CoordinateMapper);
+                                canvas.DrawPoint(thumbRight, _sensor.CoordinateMapper);
+                                canvas.DrawPoint(thumbLeft, _sensor.CoordinateMapper);
+                                canvas.DrawLine(WristLeftJoint, handLeft, _sensor.CoordinateMapper);
+                                canvas.DrawLine(WristRightJoint, handRight, _sensor.CoordinateMapper); 
 
                                 canvas.DrawLine(head,SpineShoulderJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(SpineShoulderJoint, ShoulderLeft, _sensor.CoordinateMapper);
@@ -534,30 +540,30 @@ namespace KinectHandTracking
                                 canvas.DrawLine(ShoulderRight, ElbowRightJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(ElbowRightJoint, WristRightJoint, _sensor.CoordinateMapper);
                                 canvas.DrawLine(ElbowLeftJoint, WristLeftJoint, _sensor.CoordinateMapper);
-                                canvas.DrawLine(WristLeftJoint, handLeft, _sensor.CoordinateMapper);
-                                canvas.DrawLine(WristRightJoint, handRight, _sensor.CoordinateMapper);                               
+                                                              
 
                                 //canvas.DrawSkeleton(body, _sensor.CoordinateMapper);
                                 // Find the hand states
-                                string rightHandState = "-";
-                                string leftHandState = "-";
+                                
+                                string RightHandState = "-";
+                                string LeftHandState = "-";
 
                                 switch (body.HandRightState)
                                 {
                                     case HandState.Open:
-                                        rightHandState = "Open";
+                                        RightHandState = "Open";
                                         break;
                                     case HandState.Closed:
-                                        rightHandState = "Closed";
+                                        RightHandState = "Closed";
                                         break;
                                     case HandState.Lasso:
-                                        rightHandState = "Lasso";
+                                        RightHandState = "Lasso";
                                         break;
                                     case HandState.Unknown:
-                                        rightHandState = "Unknown...";
+                                        RightHandState = "Unknown...";
                                         break;
                                     case HandState.NotTracked:
-                                        rightHandState = "Not tracked";
+                                        RightHandState = "Not tracked";
                                         break;
                                     default:
                                         break;
@@ -566,26 +572,33 @@ namespace KinectHandTracking
                                 switch (body.HandLeftState)
                                 {
                                     case HandState.Open:
-                                        leftHandState = "Open";
+                                        LeftHandState = "Open";
                                         break;
                                     case HandState.Closed:
-                                        leftHandState = "Closed";
+                                        LeftHandState = "Closed";
                                         break;
                                     case HandState.Lasso:
-                                        leftHandState = "Lasso";
+                                        LeftHandState = "Lasso";
                                         break;
                                     case HandState.Unknown:
-                                        leftHandState = "Unknown...";
+                                        LeftHandState = "Unknown...";
                                         break;
                                     case HandState.NotTracked:
-                                        leftHandState = "Not tracked";
+                                        LeftHandState = "Not tracked";
                                         break;
                                     default:
                                         break;
                                 }
 
-                                tblRightHandState.Text = rightHandState;
-                                tblLeftHandState.Text = leftHandState;
+                                tblRightHandState.Text = RightHandState;
+                                tblLeftHandState.Text = LeftHandState;
+                                
+
+
+
+
+                                //To prevent Kinect for detecting other bodies
+                                break;
                             }
                         }
                     }

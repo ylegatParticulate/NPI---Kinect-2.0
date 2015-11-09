@@ -254,6 +254,41 @@ namespace KinectHandTracking
         }
 
 
+
+
+        static void setBodyRectPosition(Point point)
+        {
+            MainWindow.bodyRect.X = point.X - MainWindow.bodyRect.Width / 2;
+            MainWindow.bodyRect.Y = point.Y - MainWindow.bodyRect.Height / 2;
+        }
+
+
+        public static Boolean Intersection(this Joint joint, Rectangle rect)
+        {
+            setBodyRectPosition(joint.Scale(MainWindow._sensor.CoordinateMapper));
+
+
+            //Workaround to prevent width/height for being 0 in the beginning
+            MainWindow.intersectionSize.Height = rect.ActualHeight == 0 ? rect.Height : rect.ActualHeight;
+            MainWindow.intersectionSize.Width = rect.ActualWidth == 0 ? rect.Width : rect.ActualWidth;
+
+            //I would like it to be this way
+            //intersectionSize.Height = rect.ActualHeight;
+            //intersectionSize.Width = rect.ActualWidth;
+
+            MainWindow.intersectionRect.Size = MainWindow.intersectionSize;
+
+            MainWindow.intersectionRect.X = Canvas.GetLeft(rect);
+            MainWindow.intersectionRect.Y = Canvas.GetTop(rect);
+
+
+
+            return MainWindow.intersectionRect.IntersectsWith(MainWindow.bodyRect);
+
+        }
+
+
         #endregion
     }
+
 }
