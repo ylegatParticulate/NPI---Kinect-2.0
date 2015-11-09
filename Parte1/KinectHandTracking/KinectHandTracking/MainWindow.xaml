@@ -10,7 +10,7 @@
                     <ColumnDefinition Width="83*"/>
                 </Grid.ColumnDefinitions>
                 <Image Name="camera" Grid.ColumnSpan="2" />
-                <Canvas Name="canvas" Margin="20,0,52,33" />
+                <Canvas Name="canvas" Margin="0,21,22,0" />
                 <Ellipse x:Name="InvisibleHead" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="216" Margin="919,311,0,0" Stroke="Black" VerticalAlignment="Top" Width="212" Visibility="Hidden"/>
                 <Image x:Name="pink" Source="pink.png" Stretch="Fill" Margin="710,292,501.492,162" Opacity="0.68"/>
                 <Image x:Name="green" Source="green.png" Stretch="Fill" Margin="710,292,501.492,162" Opacity="0.68" Visibility="Hidden"/>
@@ -22,7 +22,7 @@
                 <Image x:Name="box4" Source="box.jpg" Stretch="Fill" Margin="1665,431,44,440" Visibility="Hidden" Grid.ColumnSpan="2"/>
             </Grid>
         </Viewbox>
-        <Grid Style="{StaticResource ContainerStyle}" Margin="0,-30,-440,30">
+        <Grid Style="{StaticResource ContainerStyle}" Margin="0,22,0,-22">
             <StackPanel Margin="20">
                 <StackPanel>
                     <TextBlock Text="Right hand state:" Style="{StaticResource TitleStyle}" />
