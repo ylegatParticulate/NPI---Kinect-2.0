@@ -72,8 +72,9 @@ namespace KinectHandTracking
         //Struct for Rectangles and their elapsed time
         struct structRectangle{
             public Rectangle rect;
-            public int beginTime;
+            public TimeSpan beginTime;
             public HandState handState;
+            public string position;
         }
 
         //Joint array
@@ -82,6 +83,9 @@ namespace KinectHandTracking
         //HandStates
         HandState leftHandState;
         HandState rightHandState;
+
+        //Rectangle position List
+        List<string> positionList;
 
         #endregion
 
@@ -138,9 +142,9 @@ namespace KinectHandTracking
                 Stroke = new SolidColorBrush(Colors.Pink)
             };
 
-            pinkRectangle.beginTime = 0;
+            pinkRectangle.beginTime = countdown.Elapsed;
             pinkRectangle.handState = HandState.Closed;
-
+            pinkRectangle.position = "";
 
             blueRectangle = new structRectangle();
             blueRectangle.rect = new Rectangle
@@ -152,11 +156,12 @@ namespace KinectHandTracking
                 Stroke = new SolidColorBrush(Colors.Blue)
             };
 
-            blueRectangle.beginTime = 0;
+            blueRectangle.beginTime = countdown.Elapsed;
             blueRectangle.handState = HandState.Lasso;
-
+            blueRectangle.position = "";
 
             jointArray = new Joint[3];
+            positionList = new List<string>();
 
         }
 
@@ -375,53 +380,79 @@ namespace KinectHandTracking
 	}
 
 
-        void UpdateUIRectangle(Rectangle rect)
+        void UpdateUIRectangle(ref structRectangle rectangle)
         {
-            //canvas.Children.Remove(rect);
 
             double width = canvas.ActualWidth == 0 ? canvas.Width : canvas.ActualWidth;
             double height = canvas.ActualHeight == 0 ? canvas.Height : canvas.ActualHeight;
 
-            int x = randomGenerator.Next(0, 2) == 0 ? randomGenerator.Next((int)(width / 10), (int)(2 * width / 10)) : randomGenerator.Next((int)(7 * width / 10), (int)(9 * width / 10));
-            int y = randomGenerator.Next((int)(height / 10), (int)(9 * height / 10));
+            //int x = randomGenerator.Next(0, 2) == 0 ? randomGenerator.Next((int)(width / 10), (int)(2 * width / 10)) : randomGenerator.Next((int)(7 * width / 10), (int)(9 * width / 10));
+            //int y = randomGenerator.Next((int)(height / 10), (int)(8 * height / 10 ));
+
+            Rectangle rect = rectangle.rect;
+
+            double rectWidth = rect.ActualWidth == 0 ? rect.Width : rect.ActualWidth;
+            double rectHeight = rect.ActualHeight == 0 ? rect.Height : rect.ActualHeight;
+
+            double maxX = width / rectWidth;
+            double maxY = height / rectHeight;
+
+            int x = (int)rectWidth * randomGenerator.Next((int)(2 * maxX / 10), (int)(9 * maxX / 10));
+            int y = (int)rectHeight * randomGenerator.Next((int)(2 * maxY / 10), (int)(9 * maxY / 10));
+
+            positionList.Remove(rectangle.position);
+
+            string cadena = x.ToString() + ":" + y.ToString();
+
+            while (positionList.Contains(cadena))
+            {
+                x = (int)rectWidth * randomGenerator.Next((int)(2 * maxX / 10), (int)(9 * maxX / 10));
+                y = (int)rectHeight * randomGenerator.Next((int)(2 * maxY / 10), (int)(9 * maxY / 10));
+
+                cadena = x.ToString() + ":" + y.ToString();
+            }
+
+            positionList.Add(cadena);
+
+            rectangle.position = cadena;
 
             Canvas.SetLeft(rect, x);
             Canvas.SetTop(rect, y);
 
-            //canvas.Children.Add(rect);
-
-
         }
 
         void InteractionRectangle(ref structRectangle rectangle, Joint [] joints){
-            if (countdown.Elapsed.Seconds - rectangle.beginTime > 1)
+            if ((countdown.Elapsed - rectangle.beginTime).Seconds > 1)
             {
 
                 canvas.Children.Add(rectangle.rect);
-
-                Boolean intersection = false;
+                
+                Countdown.Text = "Nope";
 
                 foreach(Joint joint in joints){
                     if(joint.Intersection(rectangle.rect)){
-                        intersection = true;
-                        break;
-                    }
-                }
+                        switch (joint.JointType)
+                        {
+                            case JointType.HandLeft:
+                                if(rectangle.handState != leftHandState)
+                                    continue;
+                            break;
+                            case JointType.HandRight:      
+                                if(rectangle.handState != rightHandState)
+                                    continue;
+                            break;
+                        }
 
-                if (intersection)
-                {
-                    if (rectangle.handState == rightHandState || rectangle.handState == leftHandState) {
                         Countdown.Text = "Intersection!!!!!";                    
 
-
-                        UpdateUIRectangle(rectangle.rect);
+                        UpdateUIRectangle(ref rectangle);
                         canvas.Children.Remove(rectangle.rect);
 
-                        rectangle.beginTime = countdown.Elapsed.Seconds;
+                        rectangle.beginTime = countdown.Elapsed;
+
+                        break;
                     }
-                }
-                else
-                    Countdown.Text = "Nope";
+                }               
             }
         }
 
@@ -474,7 +505,6 @@ namespace KinectHandTracking
                                 Joint handLeft = body.Joints[JointType.HandLeft];
                                 Joint thumbLeft = body.Joints[JointType.ThumbLeft];
 
-
                                 jointArray[0] = head;
                                 jointArray[1] = handLeft;
                                 jointArray[2] = handRight;
@@ -489,11 +519,8 @@ namespace KinectHandTracking
 
 							                actualState = GameState.Running;
 
-                                            UpdateUIRectangle(pinkRectangle.rect);
-                                            canvas.Children.Add(pinkRectangle.rect);
-
-                                            UpdateUIRectangle(blueRectangle.rect);
-                                            canvas.Children.Add(blueRectangle.rect);
+                                            UpdateUIRectangle(ref pinkRectangle);
+                                            UpdateUIRectangle(ref blueRectangle);
 
                                             countdown.Start();
 						                }
