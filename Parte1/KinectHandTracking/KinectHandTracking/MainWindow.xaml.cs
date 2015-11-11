@@ -27,7 +27,7 @@ namespace KinectHandTracking
         MultiSourceFrameReader _reader;
         IList<Body> _bodies;
 
-        Stopwatch countdown;
+        static Stopwatch countdown;
         Boolean countdownIsStored;
 
 //        Boolean gameStarted;
@@ -61,21 +61,42 @@ namespace KinectHandTracking
         public static Rect intersectionRect;
         public static Size intersectionSize;
 
-        //PinkSquare
-        structRectangle pinkRectangle;
-        structRectangle blueRectangle;
-
-
         //Random
         Random randomGenerator;
 
         //Struct for Rectangles and their elapsed time
-        struct structRectangle{
+        class structRectangle{
             public Rectangle rect;
             public TimeSpan beginTime;
             public HandState handState;
             public string position;
+
+            public structRectangle() {
+                rect = new Rectangle();
+                beginTime = new TimeSpan();
+                handState = new HandState();
+                position = "";
+            }
+
+            public structRectangle(Color color)
+            {
+                rect = new Rectangle
+                {
+                    Width = 200,
+                    Height = 200,
+
+                    StrokeThickness = 8,
+                    Stroke = new SolidColorBrush(color)
+                };
+
+                beginTime = countdown.Elapsed;
+                position = "";
+
+            }
         }
+
+        //Struct Array
+        structRectangle[] structRectangleArray;
 
         //Joint array
         Joint[] jointArray;
@@ -96,7 +117,6 @@ namespace KinectHandTracking
             InitializeComponent();
 
             countdownIsStored = false;
-//            gameStarted = false;
 
 	        actualState = GameState.Initial;
 
@@ -125,44 +145,25 @@ namespace KinectHandTracking
 
             randomGenerator = new Random();
 
+            structRectangleArray = new structRectangle[3];
 
             bodyRect = new Rect(new Size(40, 40));
 
             intersectionSize = new Size(0,0);
             intersectionRect = new Rect(0,0,0,0);
 
-            pinkRectangle = new structRectangle();
+            structRectangleArray[0] = new structRectangle(Colors.Pink);
+            structRectangleArray[0].handState = HandState.Closed;
 
-            pinkRectangle.rect = new Rectangle
-            {
-                Width = 200,
-                Height = 200,
 
-                StrokeThickness = 8,
-                Stroke = new SolidColorBrush(Colors.Pink)
-            };
+            structRectangleArray[1] = new structRectangle(Colors.Blue);
+            structRectangleArray[1].handState = HandState.Lasso;
 
-            pinkRectangle.beginTime = countdown.Elapsed;
-            pinkRectangle.handState = HandState.Closed;
-            pinkRectangle.position = "";
-
-            blueRectangle = new structRectangle();
-            blueRectangle.rect = new Rectangle
-            {
-                Width = 200,
-                Height = 200,
-
-                StrokeThickness = 8,
-                Stroke = new SolidColorBrush(Colors.Blue)
-            };
-
-            blueRectangle.beginTime = countdown.Elapsed;
-            blueRectangle.handState = HandState.Lasso;
-            blueRectangle.position = "";
+            structRectangleArray[2] = new structRectangle(Colors.Green);
+            structRectangleArray[2].handState = HandState.Open;
 
             jointArray = new Joint[3];
             positionList = new List<string>();
-
         }
 
         #endregion
@@ -237,147 +238,137 @@ namespace KinectHandTracking
             Countdown.Text = nextmar1.ToString();       
 
         }
-    void CheckInitialConditions(Joint head){            
-		if (head.Position.Z > 1.1 && head.Position.Z < 1.31){
+        void CheckInitialConditions(Joint head){            
+		    if (head.Position.Z > 1.1 && head.Position.Z < 1.31){
 
-            Point headPoint = head.Scale(_sensor.CoordinateMapper);
-			Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
+                Point headPoint = head.Scale(_sensor.CoordinateMapper);
+			    Point invisibleHeadPoint = canvas.PointFromScreen(InvisibleHead.PointToScreen(new Point()));
 
-			invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
-			invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
+			    invisibleHeadPoint.X = (float)(invisibleHeadPoint.X + InvisibleHead.Width / 2);
+			    invisibleHeadPoint.Y = (float)(invisibleHeadPoint.Y + InvisibleHead.Height / 2);
 
-			double distance = Math.Sqrt(
-				Math.Pow(
-					headPoint.X > invisibleHeadPoint.X ?
-					invisibleHeadPoint.X - headPoint.X :
-					headPoint.X - invisibleHeadPoint.X
-				, 2)
-				 +
-				Math.Pow(
-					headPoint.Y > invisibleHeadPoint.Y ?
-					invisibleHeadPoint.Y - headPoint.Y :
-					headPoint.Y - invisibleHeadPoint.Y
-				, 2)
-			);
+			    double distance = Math.Sqrt(
+				    Math.Pow(
+					    headPoint.X > invisibleHeadPoint.X ?
+					    invisibleHeadPoint.X - headPoint.X :
+					    headPoint.X - invisibleHeadPoint.X
+				    , 2)
+				     +
+				    Math.Pow(
+					    headPoint.Y > invisibleHeadPoint.Y ?
+					    invisibleHeadPoint.Y - headPoint.Y :
+					    headPoint.Y - invisibleHeadPoint.Y
+				    , 2)
+			    );
 
-			if (distance < 61){
-				pink.Visibility = System.Windows.Visibility.Hidden;
-				green.Visibility = System.Windows.Visibility.Visible;
+			    if (distance < 61){
+				    pink.Visibility = System.Windows.Visibility.Hidden;
+				    green.Visibility = System.Windows.Visibility.Visible;
 
-				//Countdown.Text = "Stay!!!";
+				    if (countdownIsStored){
+				        int elapsed =  5 - countdown.Elapsed.Seconds;
 
-				//countdown part :)
+				        Countdown.Text = elapsed.ToString();
 
-				if (countdownIsStored){
-				    int elapsed =  5 - countdown.Elapsed.Seconds;
+				        if (elapsed < 1){
+					    countdown.Reset();
+					    countdown.Start();
 
-				    Countdown.Text = elapsed.ToString();
+					    Countdown.Text = "STAAAART";
 
-				    if (elapsed < 1){
-					countdown.Reset();
-					countdown.Start();
+					    green.Visibility = System.Windows.Visibility.Hidden;
+					    //letBoxesAppear();
 
-					Countdown.Text = "STAAAART";
-
-					//Countdown.Foreground =  Control.FontStyleProperty.PropertyType.;
-
-					//Awesome stuff here
-
-					green.Visibility = System.Windows.Visibility.Hidden;
-					//letBoxesAppear();
-
-					//gameStarted = true;
-					actualState = GameState.ShowStart;
-				    }
-				} 
-				else{
-				    //countdown = new Stopwatch();
-		            countdown.Reset();
-				    countdown.Start();
-				    countdownIsStored = true;
-				}
-			}
-			else{
-				countdownIsStored = false;
-
-				pink.Visibility = System.Windows.Visibility.Visible;
-				green.Visibility = System.Windows.Visibility.Hidden;
-
-				Countdown.Text = "Depth is OK";
-			}
-
-		}
-		else{
-			if (head.Position.Z < 1.1)
-			    Countdown.Text = "Back!!!!";
-			else
-			    Countdown.Text = "Forwardddd!!!!";
-
-			countdownIsStored = false;
-
-			pink.Visibility = System.Windows.Visibility.Visible;
-			green.Visibility = System.Windows.Visibility.Hidden;
-		}
-    }
-
-	Boolean InGameConditions(Joint head){  //Check correct depth during the game
-		if(head.Position.Z < 1.0)
-			Countdown.Text = "Go Back";
-		else if(head.Position.Z > 1.35)
-			Countdown.Text = "Forward";
-		else
-			return true;	
-
-		return false;
-	}
-
-	void WaveWorld(ref WaveHand waveHand){
-        	if (waveHand.hand.Position.Y > waveHand.elbow.Position.Y && waveHand.waveWatch.Elapsed.Seconds < 1){
-
-			    if (waveHand.hand.Position.X > waveHand.elbow.Position.X){
-
-				    if (!waveHand.waveRight){
-				        waveHand.waveWatch.Reset();
-				        waveHand.waveWatch.Start();
-
-				        waveHand.waveRight = true;
-				        waveHand.waveLeft = false;
-
-				        waveHand.waveCount++;      
+					    actualState = GameState.ShowStart;
+				        }
+				    } 
+				    else{
+		                countdown.Reset();
+				        countdown.Start();
+				        countdownIsStored = true;
 				    }
 			    }
 			    else{
-				    if (!waveHand.waveLeft){
-				        waveHand.waveWatch.Reset();
-				        waveHand.waveWatch.Start();
+				    countdownIsStored = false;
 
-				        waveHand.waveRight = false;
-				        waveHand.waveLeft = true;
+				    pink.Visibility = System.Windows.Visibility.Visible;
+				    green.Visibility = System.Windows.Visibility.Hidden;
 
-				        waveHand.waveCount++;
+				    Countdown.Text = "Depth is OK";
+			    }
+
+		    }
+		    else{
+			    if (head.Position.Z < 1.1)
+			        Countdown.Text = "Back!!!!";
+			    else
+			        Countdown.Text = "Forwardddd!!!!";
+
+			    countdownIsStored = false;
+
+			    pink.Visibility = System.Windows.Visibility.Visible;
+			    green.Visibility = System.Windows.Visibility.Hidden;
+		    }
+        }
+
+	    Boolean InGameConditions(Joint head){  //Check correct depth during the game
+		    if(head.Position.Z < 1.0)
+			    Countdown.Text = "Go Back";
+		    else if(head.Position.Z > 1.35)
+			    Countdown.Text = "Forward";
+		    else
+			    return true;	
+
+		    return false;
+	    }
+
+	    void WaveWorld(ref WaveHand waveHand){
+        	    if (waveHand.hand.Position.Y > waveHand.elbow.Position.Y && waveHand.waveWatch.Elapsed.Seconds < 1){
+
+			        if (waveHand.hand.Position.X > waveHand.elbow.Position.X){
+
+				        if (!waveHand.waveRight){
+				            waveHand.waveWatch.Reset();
+				            waveHand.waveWatch.Start();
+
+				            waveHand.waveRight = true;
+				            waveHand.waveLeft = false;
+
+				            waveHand.waveCount++;      
+				        }
+			        }
+			        else{
+				        if (!waveHand.waveLeft){
+				            waveHand.waveWatch.Reset();
+				            waveHand.waveWatch.Start();
+
+				            waveHand.waveRight = false;
+				            waveHand.waveLeft = true;
+
+				            waveHand.waveCount++;
 				    
-				    }
-			    }
+				        }
+			        }
 
-			    if (waveHand.waveCount > 4) {
-				    Countdown.Text = "Hello World!!";
+			        if (waveHand.waveCount > 4) {
+				        Countdown.Text = "Hello World!!";
 
-				    WaveHand.isWaving = true;
-			    }
-		}
-		else{
-		    waveHand.waveRight = false;
-		    waveHand.waveLeft = false;
-		    waveHand.waveCount = 0;
+				        WaveHand.isWaving = true;
+			        }
+		    }
+		    else{
+		        waveHand.waveRight = false;
+		        waveHand.waveLeft = false;
+		        waveHand.waveCount = 0;
 
-		    if(!WaveHand.isWaving)
-			    Countdown.Text = "Wave!!";
+		        if(!WaveHand.isWaving)
+			        Countdown.Text = "Wave!!";
 
-		    waveHand.waveWatch.Reset();
+		        waveHand.waveWatch.Reset();
 
-		    WaveHand.isWaving = false;
-		}	
-	}
+		        WaveHand.isWaving = false;
+		    }	
+	    }
 
 
         void UpdateUIRectangle(ref structRectangle rectangle)
@@ -397,7 +388,7 @@ namespace KinectHandTracking
             double maxX = width / rectWidth;
             double maxY = height / rectHeight;
 
-            int x = (int)rectWidth * randomGenerator.Next((int)(2 * maxX / 10), (int)(9 * maxX / 10));
+            int x = randomGenerator.Next(0, 2) == 0 ? (int)rectWidth * randomGenerator.Next((int)(maxX / 10), (int)(2 * maxX / 10)) : (int)rectWidth * randomGenerator.Next((int)(8 * maxX / 10), (int)(maxX));
             int y = (int)rectHeight * randomGenerator.Next((int)(2 * maxY / 10), (int)(9 * maxY / 10));
 
             positionList.Remove(rectangle.position);
@@ -406,7 +397,7 @@ namespace KinectHandTracking
 
             while (positionList.Contains(cadena))
             {
-                x = (int)rectWidth * randomGenerator.Next((int)(2 * maxX / 10), (int)(9 * maxX / 10));
+                x = randomGenerator.Next(0, 2) == 0 ? (int)rectWidth * randomGenerator.Next((int)(maxX / 10), (int)(2 * maxX / 10)) : (int)rectWidth * randomGenerator.Next((int)(8 * maxX / 10), (int)(maxX));
                 y = (int)rectHeight * randomGenerator.Next((int)(2 * maxY / 10), (int)(9 * maxY / 10));
 
                 cadena = x.ToString() + ":" + y.ToString();
@@ -421,9 +412,23 @@ namespace KinectHandTracking
 
         }
 
+        void UpdateRectangleThings(ref structRectangle rectangle)
+        {
+            UpdateUIRectangle(ref rectangle);
+            canvas.Children.Remove(rectangle.rect);
+            rectangle.beginTime = countdown.Elapsed;
+        }
+
         void InteractionRectangle(ref structRectangle rectangle, Joint [] joints){
             if ((countdown.Elapsed - rectangle.beginTime).Seconds > 1)
             {
+
+                if ((countdown.Elapsed - rectangle.beginTime).Seconds > randomGenerator.Next(4,20))
+                {
+                    UpdateRectangleThings(ref rectangle);
+                    return;
+                }
+                
 
                 canvas.Children.Add(rectangle.rect);
                 
@@ -443,12 +448,9 @@ namespace KinectHandTracking
                             break;
                         }
 
-                        Countdown.Text = "Intersection!!!!!";                    
+                        Countdown.Text = "Intersection!!!!!";
 
-                        UpdateUIRectangle(ref rectangle);
-                        canvas.Children.Remove(rectangle.rect);
-
-                        rectangle.beginTime = countdown.Elapsed;
+                        UpdateRectangleThings(ref rectangle);
 
                         break;
                     }
@@ -519,8 +521,8 @@ namespace KinectHandTracking
 
 							                actualState = GameState.Running;
 
-                                            UpdateUIRectangle(ref pinkRectangle);
-                                            UpdateUIRectangle(ref blueRectangle);
+                                            for (int i = 0; i < structRectangleArray.Length; i++ )
+                                                UpdateUIRectangle(ref structRectangleArray[i]);
 
                                             countdown.Start();
 						                }
@@ -533,9 +535,8 @@ namespace KinectHandTracking
                                             rightHandState = body.HandRightState;
                                             leftHandState = body.HandLeftState;
 
-                                            InteractionRectangle(ref pinkRectangle,jointArray);
-                                            InteractionRectangle(ref blueRectangle,jointArray);
-						                }
+                                            for (int i = 0; i < structRectangleArray.Length; i++)
+                                                InteractionRectangle(ref structRectangleArray[i],jointArray);						                }
 					                break;	
 					                default:
                                     break;		
@@ -666,6 +667,12 @@ namespace KinectHandTracking
         }
 
         private void Second_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+
+        private void InteractionRect()
         {
 
         }
