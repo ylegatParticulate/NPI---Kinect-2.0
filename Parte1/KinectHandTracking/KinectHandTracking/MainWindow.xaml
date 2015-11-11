@@ -22,7 +22,7 @@
                 <Image x:Name="box4" Source="box.jpg" Stretch="Fill" Margin="1665,431,44,440" Visibility="Hidden" Grid.ColumnSpan="2"/>
             </Grid>
         </Viewbox>
-        <Grid Style="{StaticResource ContainerStyle}" Margin="0,0,-428,0">
+        <Grid Style="{StaticResource ContainerStyle}" Margin="0,13,-438,-13">
             <StackPanel Margin="20">
                 <StackPanel>
                     <TextBlock Text="Right hand state:" Style="{StaticResource TitleStyle}" />
