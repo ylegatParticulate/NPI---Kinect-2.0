@@ -575,6 +575,14 @@ namespace KinectHandTracking
                                                 actualState = GameState.InitialPosition;
 
                                                 ResetText.Visibility = System.Windows.Visibility.Hidden;
+                                                Logo.Visibility = System.Windows.Visibility.Hidden;
+                                                Circle1.Visibility = System.Windows.Visibility.Hidden;
+                                                Circle2.Visibility = System.Windows.Visibility.Hidden;
+                                                Arrow1.Visibility = System.Windows.Visibility.Hidden;
+                                                Arrow2.Visibility = System.Windows.Visibility.Hidden;
+                                                TutorialText1.Visibility = System.Windows.Visibility.Hidden;
+                                                TutorialText2.Visibility = System.Windows.Visibility.Hidden;
+
                                                 pink.Visibility = System.Windows.Visibility.Visible;
 
                                                 break;

@@ -10,7 +10,7 @@
                     <ColumnDefinition Width="83*"/>
                 </Grid.ColumnDefinitions>
                 <Image Name="camera" Grid.ColumnSpan="2" />
-                <Canvas Name="canvas" Margin="0,21,22,0" >
+                <Canvas Name="canvas" Margin="22,21,0,0" >
                     <Rectangle x:Name="Reset" Fill="#FFF4F4F5" Stroke="Black" Height="97" Canvas.Left="814" Canvas.Top="53" Width="377" Visibility="Hidden"/>
                 </Canvas>
                 <Ellipse x:Name="InvisibleHead" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="216" Margin="919,311,0,0" Stroke="Black" VerticalAlignment="Top" Width="212" Visibility="Hidden"/>
@@ -25,7 +25,50 @@
                 <TextBox x:Name="TimerBox" Height="129" TextWrapping="Wrap" Width="231" FontSize="66" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1558,52,48,899" Background="{x:Null}" BorderBrush="{x:Null}" TextAlignment="Center" FontWeight="Bold" Foreground="#FFA64D4D"/>
                 <TextBox x:Name="ScoreBox" HorizontalAlignment="Center" Height="119" TextWrapping="Wrap" VerticalAlignment="Center" Width="257" FontSize="66" TextChanged="TextBox_TextChanged_4" Margin="65,57,1515,904" Background="{x:Null}" BorderBrush="{x:Null}" TextAlignment="Center" FontWeight="Bold" Foreground="#FFEE2B2B"/>
                 <Image x:Name="GameOver" Source="gameoverpng.png" Stretch="Fill" Grid.ColumnSpan="2" Margin="1259,645,61,-45" Visibility="Hidden"/>
-                <TextBox x:Name="ResetText" TextWrapping="Wrap" Text="Start!" FontSize="72" TextAlignment="Center" Background="#FF9F6DE8" BorderBrush="Black" Foreground="White" Margin="815,69,648,904"/>
+                <TextBox x:Name="ResetText" TextWrapping="Wrap" Text="Got it!" FontSize="72" TextAlignment="Center" Background="#FF9F6DE8" BorderBrush="Black" Foreground="White" Margin="815,69,648,904"/>
+                <TextBox x:Name="TutorialText1" TextWrapping="Wrap" Text="Interact with me to get points!" Margin="326,427,1080,507" FontSize="48" TextAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" FontWeight="Bold" FontFamily="Comic Sans MS" RenderTransformOrigin="0.5,0.5">
+                    <TextBox.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="1.832"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </TextBox.RenderTransform>
+                </TextBox>
+                <Image x:Name="Logo" Source="Squares_Logo.png" Stretch="Fill" Margin="691,197,536,705"/>
+                <Image x:Name="Circle2" Source="circle2.png" Stretch="Fill" Margin="1379,580,172,196"/>
+                <Image x:Name="Arrow2" Source="arrow1.png" Stretch="Fill" Margin="1367,831,198,22" RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+                <Image x:Name="Circle1" Source="circle1.png" Stretch="Fill" Margin="378,580,1159,200"/>
+                <Image x:Name="Arrow1" Source="arrow2.png" Stretch="Fill" Margin="240,515,1433,341" RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="-25.537"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+                <TextBox x:Name="TutorialText2" TextWrapping="Wrap" Text="Do the right gesture to earn more :)" FontSize="48" TextAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" FontWeight="Bold" FontFamily="Comic Sans MS" Margin="476,947,445,45" RenderTransformOrigin="0.5,0.5">
+                    <TextBox.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="-0.829"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </TextBox.RenderTransform>
+                </TextBox>
             </Grid>
         </Viewbox>
         <Grid Style="{StaticResource ContainerStyle}" Margin="0,0,-428,0">

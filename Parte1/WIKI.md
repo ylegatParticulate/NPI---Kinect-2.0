@@ -1,4 +1,4 @@
-### 1 ¿CÓMO FUNCIONA KINECT?
+﻿### 1 ¿CÓMO FUNCIONA KINECT?
 Kinect es un sensor de captación que reconoce entornos mediantes diversos sensores. Entre ellos tenemos detectores de sonido y de movimiento, además de infrarrojos y una cámara de vídeo.
 Para trabajar con Kinect usaremos Visual Studio, lo que quiere decir que trabajaremos por un lado con detectores y por otro con el resultado de las operaciones realizadas con lo detectado. 
 
@@ -56,3 +56,11 @@ En nuestra aplicación hacemos uso de una silueta transparente y de una caja de 
  - No era obvio que se usase el objeto Stopwatch para medir el tiempo ya que en la mayoría de lenguajes de programación se usa la clase de fecha (también existente en C# pero sin este uso o no se ha conseguido de esta forma).
  - No es obvio en absoluto como clonar objetos sin hacer uso de funciones.
  - Por defecto, las funciones pasan todos los objetos por valor (hacen una copia), en lugar de pasarlos por referencia, lo que hace que el código sea generalmente ineficiente si esto se desconoce, aunque se puede **solucionar** añadiendo **ref** tanto en la definición del parámetro como en el parámetro en sí enviado.
+
+--
+### 10 ENLACES USADOS
+ - [Game Over](http://www.wired.com/images_blogs/gamelife/2010/07/249-artwork-focus.jpg)
+ - [Círculo 1](http://www.polyvore.com/cgi/img-thing?.out=jpg&size=l&tid=23643390)
+ - [Círculo 2](http://dmad.com/wp-content/uploads/2012/09/isolated-circle.png)
+ - [Flecha 1](http://static1.squarespace.com/static/52306c87e4b048babe0d2faf/t/54ac12dbe4b0f3612b25ea39/1420563208228/curved_arrow-black.png)
+ - [Flecha 2](http://richmonkey.co.uk/ebay/images/curved_arrow.png)
