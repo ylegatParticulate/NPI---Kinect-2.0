@@ -32,10 +32,8 @@ namespace KinectHandTracking
 
 //        Boolean gameStarted;
 	
-	enum GameState { Initial, ShowStart, Running };
-	GameState actualState;
-
-        UIElement[] blockArray;
+	    enum GameState { Initialize, MainScreen, InitialPosition, ShowStart, Running, Ended };
+	    GameState actualState;
 
 	//Hello World gesture
 
@@ -70,12 +68,14 @@ namespace KinectHandTracking
             public TimeSpan beginTime;
             public HandState handState;
             public string position;
+            public Boolean gestureTried;
 
             public structRectangle() {
                 rect = new Rectangle();
                 beginTime = new TimeSpan();
                 handState = new HandState();
                 position = "";
+                gestureTried = false;
             }
 
             public structRectangle(Color color)
@@ -108,6 +108,12 @@ namespace KinectHandTracking
         //Rectangle position List
         List<string> positionList;
 
+        //Score
+        int score;
+
+        //Rectangle Speed timer lol
+        int lowRandom;
+
         #endregion
 
         #region Constructor
@@ -118,13 +124,12 @@ namespace KinectHandTracking
 
             countdownIsStored = false;
 
-	        actualState = GameState.Initial;
+	        actualState = GameState.Initialize;
 
 	        countdown = new Stopwatch();
 
-            //letBoxesAppear();
-            
-	    //Hello World gesture
+           
+	        //Hello World gesture
             waveRightHand = new WaveHand();
 
             waveRightHand.waveRight = false;
@@ -154,16 +159,22 @@ namespace KinectHandTracking
 
             structRectangleArray[0] = new structRectangle(Colors.Pink);
             structRectangleArray[0].handState = HandState.Closed;
-
+            structRectangleArray[0].position = "3:4";
 
             structRectangleArray[1] = new structRectangle(Colors.Blue);
             structRectangleArray[1].handState = HandState.Lasso;
+            structRectangleArray[1].position = "5:4";
 
             structRectangleArray[2] = new structRectangle(Colors.Green);
             structRectangleArray[2].handState = HandState.Open;
+            structRectangleArray[0].position = "7:4";
+
 
             jointArray = new Joint[3];
             positionList = new List<string>();
+
+            score = 0;
+            lowRandom = 11;
         }
 
         #endregion
@@ -196,48 +207,7 @@ namespace KinectHandTracking
             }
         }
 
-
-        void letBoxesAppear()
-        {
-           /* 
-            BitmapImage box = new BitmapImage(new Uri("D:/UNI/WiSe1516/NPI/KinectHandTracking/KinectHandTracking/box.jpg"));
-
-            UIElement hola = new UIElement();
-
-            hola.
-            
-
-            canvas.Children.Add()
-            */
-
-
-            Random rnd = new Random();
-            int nextmar1= 4;
-
-            if (nextmar1 == 1)
-            {
-                box1.Visibility = System.Windows.Visibility.Visible;
-            }
-            if (nextmar1 ==2)
-            {
-                box2.Visibility = System.Windows.Visibility.Visible;
-            }
-            if (nextmar1 == 3)
-            {
-                box3.Visibility = System.Windows.Visibility.Visible;
-            }
-            if (nextmar1 == 4)
-            {
-                box4.Visibility = System.Windows.Visibility.Visible;
-            }
-           //String bla=  Convert.ToString(nextmar1);
-        
-           // String nextBlock1 = "Block"+ nextmar1;
-       
-            
-            Countdown.Text = nextmar1.ToString();       
-
-        }
+        //kalibrierung
         void CheckInitialConditions(Joint head){            
 		    if (head.Position.Z > 1.1 && head.Position.Z < 1.31){
 
@@ -271,15 +241,15 @@ namespace KinectHandTracking
 				        Countdown.Text = elapsed.ToString();
 
 				        if (elapsed < 1){
-					    countdown.Reset();
-					    countdown.Start();
+					        countdown.Reset();
+					        countdown.Start();
 
-					    Countdown.Text = "STAAAART";
+					        Countdown.Text = "STAAAART";
 
-					    green.Visibility = System.Windows.Visibility.Hidden;
-					    //letBoxesAppear();
+					        green.Visibility = System.Windows.Visibility.Hidden;
+					        
 
-					    actualState = GameState.ShowStart;
+					        actualState = GameState.ShowStart;
 				        }
 				    } 
 				    else{
@@ -313,11 +283,17 @@ namespace KinectHandTracking
 
 	    Boolean InGameConditions(Joint head){  //Check correct depth during the game
 		    if(head.Position.Z < 1.0)
-			    Countdown.Text = "Go Back";
-		    else if(head.Position.Z > 1.35)
-			    Countdown.Text = "Forward";
-		    else
-			    return true;	
+			    Countdown.Text = "Please Go Back";
+            else if (head.Position.Z > 1.35)
+                Countdown.Text = "Please move forward";
+            else
+            {
+                countdown.Start();
+                Countdown.Text = "";
+                return true;
+            }
+
+            countdown.Stop();
 
 		    return false;
 	    }
@@ -371,6 +347,7 @@ namespace KinectHandTracking
 	    }
 
 
+        // Methods only used in the actual game (not main screen)
         void UpdateUIRectangle(ref structRectangle rectangle)
         {
 
@@ -417,48 +394,120 @@ namespace KinectHandTracking
             UpdateUIRectangle(ref rectangle);
             canvas.Children.Remove(rectangle.rect);
             rectangle.beginTime = countdown.Elapsed;
+            rectangle.gestureTried = false;
         }
 
-        void InteractionRectangle(ref structRectangle rectangle, Joint [] joints){
+        void InteractionRectangle(ref structRectangle rectangle, Joint[] joints)
+        {
             if ((countdown.Elapsed - rectangle.beginTime).Seconds > 1)
             {
 
-                if ((countdown.Elapsed - rectangle.beginTime).Seconds > randomGenerator.Next(4,20))
+                if ((countdown.Elapsed - rectangle.beginTime).Seconds > randomGenerator.Next(lowRandom, 20))
                 {
+                    if (rectangle.gestureTried)
+                        score += 10;
+                    else
+                        score -= score - 20 < 0 ? score : 20;
+
                     UpdateRectangleThings(ref rectangle);
                     return;
                 }
-                
+
 
                 canvas.Children.Add(rectangle.rect);
-                
-                Countdown.Text = "Nope";
 
-                foreach(Joint joint in joints){
-                    if(joint.Intersection(rectangle.rect)){
+                //Countdown.Text = "Nope";
+
+                foreach (Joint joint in joints)
+                {
+                    if (joint.Intersection(rectangle.rect))
+                    {
                         switch (joint.JointType)
                         {
                             case JointType.HandLeft:
-                                if(rectangle.handState != leftHandState)
+                                if (rectangle.handState != leftHandState)
+                                {
+                                    rectangle.gestureTried = true;
                                     continue;
-                            break;
-                            case JointType.HandRight:      
-                                if(rectangle.handState != rightHandState)
+                                }
+                                break;
+                            case JointType.HandRight:
+                                if (rectangle.handState != rightHandState)
+                                {
+                                    rectangle.gestureTried = true;
                                     continue;
-                            break;
+                                }
+                                break;
                         }
 
-                        Countdown.Text = "Intersection!!!!!";
+                        // Countdown.Text = "Intersection!!!!!";
+
+                        score += 20;
 
                         UpdateRectangleThings(ref rectangle);
 
                         break;
                     }
-                }               
+                }
             }
         }
 
 
+        // Methods only used in the Main Screen
+        void UpdateRectangleThingsMain(ref structRectangle rectangle)
+        {
+            UpdateUIRectangleMain(ref rectangle);
+            canvas.Children.Remove(rectangle.rect);
+            rectangle.beginTime = countdown.Elapsed;
+        }
+
+        void UpdateUIRectangleMain(ref structRectangle rectangle)
+        {
+
+            Rectangle rect = rectangle.rect;
+
+            double rectWidth = rect.ActualWidth == 0 ? rect.Width : rect.ActualWidth;
+            double rectHeight = rect.ActualHeight == 0 ? rect.Height : rect.ActualHeight;
+
+            positionList.Add(rectangle.position);
+
+            string cadena = positionList[0];
+            positionList.RemoveAt(0);
+
+            int x = (int)(rectWidth * char.GetNumericValue(cadena[0]));
+            int y = (int)(rectHeight * char.GetNumericValue(cadena[2]));
+
+            rectangle.position = cadena;
+
+            Canvas.SetLeft(rect, x);
+            Canvas.SetTop(rect, y);
+        }
+
+        void InteractionRectangle(ref structRectangle rectangle, Joint joint)
+        {
+            if ((countdown.Elapsed - rectangle.beginTime).Seconds > 1)
+            {
+                canvas.Children.Add(rectangle.rect);
+               
+                if (joint.Intersection(rectangle.rect))
+                {
+                    switch (joint.JointType)
+                    {
+                        case JointType.HandLeft:
+                            if (rectangle.handState == leftHandState)
+                                UpdateRectangleThingsMain(ref rectangle);
+                            break;
+                        case JointType.HandRight:
+                            if (rectangle.handState == rightHandState)
+                                UpdateRectangleThingsMain(ref rectangle);
+                            break;
+                    }
+                }
+            }
+        }
+
+
+        // The method where everything happens
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
         {
             var reference = e.FrameReference.AcquireFrame();
@@ -512,7 +561,29 @@ namespace KinectHandTracking
                                 jointArray[2] = handRight;
 
 				                switch (actualState){
-					                case GameState.Initial:
+                                    case GameState.Initialize:
+                                        for (int i = 0; i < structRectangleArray.Length; i++)
+                                            UpdateUIRectangleMain(ref structRectangleArray[i]);
+                                        actualState = GameState.MainScreen;
+
+                                        countdown.Start();
+                                    break;
+                                    case GameState.MainScreen:
+                                        foreach (Joint joint in jointArray)
+                                            if (joint.Intersection(Reset))
+                                            {
+                                                actualState = GameState.InitialPosition;
+
+                                                ResetText.Visibility = System.Windows.Visibility.Hidden;
+                                                pink.Visibility = System.Windows.Visibility.Visible;
+
+                                                break;
+                                            }
+                                            else
+                                                for (int i = 0; i < structRectangleArray.Length; i++)
+                                                    InteractionRectangle(ref structRectangleArray[i], joint);
+                                    break;
+                                    case GameState.InitialPosition:
 						                CheckInitialConditions(head);
 					                break;
 					                case GameState.ShowStart:
@@ -524,20 +595,70 @@ namespace KinectHandTracking
                                             for (int i = 0; i < structRectangleArray.Length; i++ )
                                                 UpdateUIRectangle(ref structRectangleArray[i]);
 
+                                            ScoreBox.Visibility = System.Windows.Visibility.Visible;
+                                            TimerBox.Visibility = System.Windows.Visibility.Visible;
+
                                             countdown.Start();
 						                }
 					                break;
 					                case GameState.Running:
 						                if (InGameConditions(head)){
-                                             
+
+                                            TimerBox.Text = (60 - countdown.Elapsed.Seconds).ToString();
+
                                             Point handPoint = handRight.Scale(_sensor.CoordinateMapper);
 
                                             rightHandState = body.HandRightState;
                                             leftHandState = body.HandLeftState;
 
                                             for (int i = 0; i < structRectangleArray.Length; i++)
-                                                InteractionRectangle(ref structRectangleArray[i],jointArray);						                }
+                                                InteractionRectangle(ref structRectangleArray[i],jointArray);
+
+
+                                            ScoreBox.Text = score.ToString();
+
+                                            if (countdown.Elapsed.Seconds > 29)
+                                            {
+                                                lowRandom = 4;
+
+                                                if (countdown.Elapsed.Seconds > 58)
+                                                {
+                                                    actualState = GameState.Ended;
+
+                                                    countdown.Reset();
+
+
+                                                    ScoreBox.Visibility = System.Windows.Visibility.Hidden;
+                                                    TimerBox.Visibility = System.Windows.Visibility.Hidden;
+
+                                                    Countdown.Text = "Your Swaggy score is " + score.ToString();
+
+                                                    GameOver.Visibility = System.Windows.Visibility.Visible;
+
+                                                    ResetText.Text = "Try again!";
+                                                    ResetText.Visibility = System.Windows.Visibility.Visible;
+
+                                                    for (int i = 0; i < structRectangleArray.Length; i++)
+                                                        UpdateRectangleThings(ref structRectangleArray[i]);
+                                                }
+                                            }
+                                        }
 					                break;	
+                                    case GameState.Ended:
+                                        foreach(Joint joint in jointArray)
+                                            if (joint.Intersection(Reset)) {
+                                                actualState = GameState.ShowStart;
+
+                                                Countdown.Text = "STAAAAAART!!!";
+                                                ResetText.Visibility = System.Windows.Visibility.Hidden;
+                                                GameOver.Visibility = System.Windows.Visibility.Hidden;
+
+                                                TimerBox.Text = "60";
+
+                                                countdown.Start();
+                                                break;
+                                            }
+                                    break;
 					                default:
                                     break;		
 				                }
@@ -673,6 +794,11 @@ namespace KinectHandTracking
 
 
         private void InteractionRect()
+        {
+
+        }
+
+        private void TextBox_TextChanged_4(object sender, TextChangedEventArgs e)
         {
 
         }

@@ -10,16 +10,22 @@
                     <ColumnDefinition Width="83*"/>
                 </Grid.ColumnDefinitions>
                 <Image Name="camera" Grid.ColumnSpan="2" />
-                <Canvas Name="canvas" Margin="0,21,22,0" />
+                <Canvas Name="canvas" Margin="0,21,22,0" >
+                    <Rectangle x:Name="Reset" Fill="#FFF4F4F5" Stroke="Black" Height="97" Canvas.Left="814" Canvas.Top="53" Width="377" Visibility="Hidden"/>
+                </Canvas>
                 <Ellipse x:Name="InvisibleHead" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="216" Margin="919,311,0,0" Stroke="Black" VerticalAlignment="Top" Width="212" Visibility="Hidden"/>
-                <Image x:Name="pink" Source="pink.png" Stretch="Fill" Margin="710,292,501.492,162" Opacity="0.68"/>
+                <Image x:Name="pink" Source="pink.png" Stretch="Fill" Margin="710,292,501.492,162" Opacity="0.68" Visibility="Hidden"/>
                 <Image x:Name="green" Source="green.png" Stretch="Fill" Margin="710,292,501.492,162" Opacity="0.68" Visibility="Hidden"/>
-                <TextBox x:Name="Countdown" HorizontalAlignment="Left" Height="106" Margin="437,181,0,0" TextWrapping="Wrap" Text="Countdown!!!" VerticalAlignment="Top" Width="1143" TextChanged="TextBox_TextChanged_3" FontSize="72" Background="{x:Null}" Foreground="#FFEC8585" FontWeight="Bold" TextAlignment="Center" BorderBrush="{x:Null}" SelectionBrush="{x:Null}"/>
+                <TextBox x:Name="Countdown" HorizontalAlignment="Left" Height="106" Margin="437,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="1143" TextChanged="TextBox_TextChanged_3" FontSize="72" Background="{x:Null}" Foreground="#FFEC8585" FontWeight="Bold" TextAlignment="Center" BorderBrush="{x:Null}" SelectionBrush="{x:Null}"/>
                 <Image Source="box.jpg" Stretch="Fill" Margin="1633,10,76,861" Visibility="Hidden" Grid.ColumnSpan="2"/>
                 <Image x:Name="box1" Source="box.jpg" Stretch="Fill" Margin="111,-33,1515.492,904" Visibility="Hidden"/>
                 <Image x:Name="box2" Source="box.jpg" Stretch="Fill" Margin="87,755,1539.492,116" Visibility="Hidden"/>
                 <Image x:Name="box3" Source="box.jpg" Stretch="Fill" Margin="1633,792,76,79" Visibility="Hidden" Grid.ColumnSpan="2"/>
                 <Image x:Name="box4" Source="box.jpg" Stretch="Fill" Margin="1665,431,44,440" Visibility="Hidden" Grid.ColumnSpan="2"/>
+                <TextBox x:Name="TimerBox" Height="129" TextWrapping="Wrap" Width="231" FontSize="66" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1558,52,48,899" Background="{x:Null}" BorderBrush="{x:Null}" TextAlignment="Center" FontWeight="Bold" Foreground="#FFA64D4D"/>
+                <TextBox x:Name="ScoreBox" HorizontalAlignment="Center" Height="119" TextWrapping="Wrap" VerticalAlignment="Center" Width="257" FontSize="66" TextChanged="TextBox_TextChanged_4" Margin="65,57,1515,904" Background="{x:Null}" BorderBrush="{x:Null}" TextAlignment="Center" FontWeight="Bold" Foreground="#FFEE2B2B"/>
+                <Image x:Name="GameOver" Source="gameoverpng.png" Stretch="Fill" Grid.ColumnSpan="2" Margin="1259,645,61,-45" Visibility="Hidden"/>
+                <TextBox x:Name="ResetText" TextWrapping="Wrap" Text="Start!" FontSize="72" TextAlignment="Center" Background="#FF9F6DE8" BorderBrush="Black" Foreground="White" Margin="815,69,648,904"/>
             </Grid>
         </Viewbox>
         <Grid Style="{StaticResource ContainerStyle}" Margin="0,0,-428,0">
